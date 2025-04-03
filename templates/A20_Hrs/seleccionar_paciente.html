@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>Gestionar Horas Medicas</h1>
+<hr>
+<h2>Tomar hora para :</h2>
+{% if pacientes %}
+<ul>
+    {% for paciente in pacientes %}
+    <li><a href="{% url 'A20_Hrs:solicitar_horapara' paciente.user.id %}">{{ paciente.user.first_name }} {{ paciente.user.last_name }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+    <p>No hay pacientes </p>
+{% endif %}
+<br>
+<h2>Liberar hora de :</h2>
+{% if pacientes %}
+<ul>
+    {% for paciente in pacientes %}
+    <li><a href="{% url 'A20_Hrs:liberar_hora_para' paciente.user.id %}">{{ paciente.user.first_name }} {{ paciente.user.last_name }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+    <p>No hay pacientes </p>
+{% endif %}
+<br>
+
+{% endblock %}

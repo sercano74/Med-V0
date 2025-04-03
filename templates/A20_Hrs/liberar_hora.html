@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Liberar Hora Médica{% if paciente %} para {{ paciente.user.first_name }} {{ paciente.user.last_name }}{% endif %}</h1>
+
+{% if horas_medicas %}
+    <h2>Horas Médicas Tomadas</h2>
+    <form method="POST" action=".">
+        {% csrf_token %}
+        <label for="hora_medica">Hora Médica:</label>
+        <select id="hora_medica" name="hora_medica" required>
+            <option value="">Seleccione una hora médica</option>
+            {% for hora_medica in horas_medicas %}
+                <option value="{{ hora_medica.id }}">{{ hora_medica.f_hra|date:"l, d/m/Y H:i" }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Liberar Hora</button>
+    </form>
+{% else %}
+    <p>No hay horas médicas tomadas para liberar.</p>
+{% endif %}
+
+{% endblock %}

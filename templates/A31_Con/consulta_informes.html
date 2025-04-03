@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Informes de Pacientes</h1>
+<table id="example" class="table table-bordered border-primary table-success table-hover" >
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Cédula</th>
+            <th>F. Nacimiento</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for paciente in pacientes %}
+            <tr>
+                <td>{{ paciente.user.get_full_name }}</td>
+                <td>{{ paciente.user.dni}}</td>
+                <td>{{paciente.user.f_nacim}}</td>
+                <td>
+                    <a class="btn but-go" href="{% url 'A31_Con:informe_historico' paciente.user.id %}">Informe Histórico</a>
+                    <a class="btn but-go" href="{% url 'A31_Con:consultas_resumen' paciente.user.id %}">Consultas</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

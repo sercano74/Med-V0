@@ -1,0 +1,13 @@
+<!-- filepath: /c:/Users/sergi/OneDrive/Escritorio/ProyectosDjango/Med/templates/A20_Hrs/editar_hora_medica.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Editar Hora Médica</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+</div>
+{% endblock %}

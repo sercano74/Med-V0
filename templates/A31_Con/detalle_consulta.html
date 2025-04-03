@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Detalle de la Consulta</h1>
+<p><strong>Paciente:</strong> {{ consulta.hora_medica.paciente.user.get_full_name }}</p>
+<p><strong>Diagnóstico:</strong> {{ consulta.diagnostico }}</p>
+<p><strong>Notas:</strong> {{ consulta.notas }}</p>
+
+<h2>Recetas</h2>
+<ul>
+    {% for receta in recetas %}
+        <li>{{ receta.medicamento.nombre_com }} - {{ receta.dosis }} - {{ receta.frecuencia }} - {{ receta.duracion }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Exámenes</h2>
+<ul>
+    {% for examen in examenes %}
+        <li>{{ examen.examen.nombre }} - {{ examen.estado }}
+            {% if examen.archivo %}
+                <a href="{{ examen.archivo.url }}" target="_blank">Ver archivo</a>
+            {% else %}
+                <a href="{% url 'subir_resultado_examen' examen.id %}">Subir resultado</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+<h2>Certificados</h2>
+<ul>
+    {% for certificado in certificados %}
+        <li>{{ certificado.archivo.name }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Imágenes</h2>
+<ul>
+    {% for imagen in imagenes %}
+        <li>
+            {% if imagen.imagen %}
+                <img src="{{ imagen.imagen.url }}" alt="Imagen de consulta" style="max-width: 200px;">
+            {% endif %}
+            <p>{{ imagen.diagnostico }}</p>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

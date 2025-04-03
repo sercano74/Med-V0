@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+{% for hora_medica in horas_medicas %}
+    <div>
+        <input type="radio" id="hora_medica_{{ hora_medica.id }}" name="hora_medica" value="{{ hora_medica.id }}">
+        <label for="hora_medica_{{ hora_medica.id }}">{{ hora_medica.f_hora }}</label>
+    </div>
+{% endfor %}
+
+
+{% endblock %}
+

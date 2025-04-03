@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Registro de Paciente</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% comment %} <label for= "username" > Your nickname  </label>
+    <input id = "username" type = "text" name = "username"> {% endcomment %}
+    {{ form.as_p }}
+    <button type="submit">Registrarse</button>
+</form>
+{% endblock %}

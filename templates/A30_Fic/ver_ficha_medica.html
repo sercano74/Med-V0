@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if ficha.medico %}
+    <h1>Ficha Médica n° {{ficha.id}}</h1>
+    <p>Paciente     : {{ ficha.paciente.user.first_name }} {{ ficha.paciente.user.last_name }}</p>
+    <p>Fecha        : {{ ficha.f_consulta }}</p>
+    <p>Médico       : Dc. {{ ficha.medico.user.first_name }} {{ ficha.medico.user.last_name }}</p>
+    {% for especialidad in sus_especialidades %}
+    <p>Especialidad : {{ especialidad.name }}{% if not forloop.last %}, {% endif %}</p>
+    {% endfor %}
+    <hr>
+    <h2>Datos de Entrada </h2>
+    <p>Temperatura: {{ ficha.temperatura }} °C</p>
+    <p>Presión Sistólica: {{ ficha.p_sistolica }} mmHg</p>
+    <p>Presión Diastólica: {{ ficha.p_diastolica }} mmHg</p>
+    <p>Altura: {{ ficha.altura }} cm</p>
+    <p>Peso: {{ ficha.peso }} kg</p>
+    <p>IMC: {{ ficha.imc }}</p>
+    <p>Síntomas: {{ ficha.sintomas }}</p>
+    <hr>
+    <h2>Datos del Paciente </h2>
+    <p>Diagnóstico: {{ ficha.diagnostico }}</p>
+    <p>Prescripción: {{ ficha.prescripcion }}</p>
+    <p>Notas: {{ ficha.notas }}</p>
+    <p>Estado: {{ ficha.estado }}</p>
+{% else %}
+<br>
+<p> No existe ficha médica!</p>
+{% endif %}
+<br>
+<hr>
+<button type="submit">Imprimir</button>
+
+
+{% endblock %}

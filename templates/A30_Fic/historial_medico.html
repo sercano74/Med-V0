@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Historial Médico de {{ paciente.user.first_name }} {{ paciente.user.last_name }}</h1>
+
+<h2>Historial de Atenciones</h2>
+{% if fichas_medicas %}
+    <ul>
+        {% for ficha in fichas_medicas %}
+            <li>
+                {{ ficha.f_consulta|date:"l, d/m/Y H:i" }} - {{ ficha.diagnostico }} -
+                <a href="{% url 'A30_Fic:ver_ficha_medica' ficha.id %}">Ver Ficha</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay fichas médicas disponibles.</p>
+{% endif %}
+
+<h2>Histograma de Pesos y Estatura</h2>
+<canvas id="pesoAlturaChart" style="width: 100%; height: 400px;"></canvas>
+
+<h2>Gráfico de Presiones Sistólicas y Diastólicas</h2>
+<img src="data:image/png;base64,{{ grafico_presiones }}" alt="Gráfico de Presiones Sistólicas y Diastólicas">
+
+<h2>Últimos Medicamentos</h2>
+<ul>
+    {% for medicamento in medicamentos %}
+        <li>{{ medicamento }}</li>
+    {% endfor %}
+</ul>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctxPesoAltura = document.getElementById('pesoAlturaChart').getContext('2d');
+    var pesoAlturaChart = new Chart(ctxPesoAltura, {
+        type: 'bar',
+        data: {
+            labels: {{ fechas|safe }},
+            datasets: [
+                {
+                    label: 'Peso (kg)',
+                    data: {{ pesos|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Altura (cm)',
+                    data: {{ alturas|safe }},
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

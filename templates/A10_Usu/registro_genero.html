@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Registro de Género</h2>
+{% if generos %}
+<ul>
+    {% for genero in generos %}
+    <li>{{ genero.name }} </li>
+    {% endfor %}
+</ul>
+{% else %}
+    <p>Aún no se han ingresado generos de salud </p>
+{% endif %}
+
+<hr>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Registrarse</button>
+</form>
+{% endblock %}

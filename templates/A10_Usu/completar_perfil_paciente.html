@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Completar Perfil de Paciente</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.first_name.label_tag }} {{ form.first_name }}
+    </div>
+    <div class="form-group">
+        {{ form.last_name.label_tag }} {{ form.last_name }}
+    </div>
+    <div class="form-group">
+        {{ form.dni.label_tag }} {{ form.dni }}
+    </div>
+    <div class="form-group">
+        {{ form.f_nacim.label_tag }} {{ form.f_nacim }}
+    </div>
+    <div class="form-group">
+        {{ form.imagen.label_tag }} {{ form.imagen }}
+    </div>
+    <div class="form-group">
+        {{ form.genero.label_tag }} {{ form.genero }}
+    </div>
+    <div class="form-group">
+        {{ form.tel_pers.label_tag }} {{ form.tel_pers }}
+    </div>
+    <div class="form-group">
+        {{ form.name_emerg.label_tag }} {{ form.name_emerg }}
+    </div>
+    <div class="form-group">
+        {{ form.tel_emerg.label_tag }} {{ form.tel_emerg }}
+    </div>
+    <div class="form-group">
+        {{ form.new_password1.label_tag }} {{ form.new_password1 }}
+    </div>
+    <div class="form-group">
+        {{ form.new_password2.label_tag }} {{ form.new_password2 }}
+    </div>
+    <div class="form-group">
+        {{ form.grupoSangre.label_tag }} {{ form.grupoSangre }}
+    </div>
+    <div class="form-group">
+        {{ form.enfermedades.label_tag }} {{ form.enfermedades }}
+    </div>
+    <div class="form-group">
+        {{ form.cirugias.label_tag }} {{ form.cirugias }}
+    </div>
+    <div class="form-group">
+        {{ form.alergias.label_tag }} {{ form.alergias }}
+    </div>
+    <div class="form-group">
+        {{ form.meds_actuales.label_tag }} {{ form.meds_actuales }}
+    </div>
+    <div class="form-group">
+        {{ form.sistema_salud.label_tag }} {{ form.sistema_salud }}
+    </div>
+    <button class="btn but-info" type="submit">Actualizar Datos</button>
+</form>
+{% endblock %}

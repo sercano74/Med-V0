@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+<br>
+<h1>Detalle de la Consulta</h1>
+<hr>
+<p><strong>N° Atención:</strong> {{ consulta.id }}</p>
+<p><strong>Fecha:</strong> {{ consulta.hora_medica.f_hra }}</p>
+<p><strong>Paciente:</strong> {{ consulta.hora_medica.paciente.user.first_name }} {{ consulta.hora_medica.paciente.user.last_name }}</p>
+<p><strong>Médico:</strong> {{ consulta.hora_medica.medico.user.first_name }} {{ consulta.hora_medica.medico.user.last_name }}</p>
+<p><strong>Temperatura:</strong> {{ consulta.temperatura }}</p>
+<p><strong>Presión Sistólica:</strong> {{ consulta.p_sistolica }}</p>
+<p><strong>Presión Diastólica:</strong> {{ consulta.p_diastolica }}</p>
+<p><strong>Altura:</strong> {{ consulta.altura }}</p>
+<p><strong>Peso:</strong> {{ consulta.peso }}</p>
+<p><strong>IMC:</strong> {{ consulta.imc }}</p>
+<p><strong>Síntomas:</strong> {{ consulta.sintomas }}</p>
+<p><strong>Diagnóstico:</strong> {{ consulta.diagnostico }}</p>
+<p><strong>Observaciones:</strong> {{ consulta.observaciones }}</p>
+
+<br>
+<h2>Exámenes Solicitados</h2>
+<hr>
+<ul>
+    {% for examen in consulta.consulta_examenes.all %}
+        <li>{{ examen.examen.nombre }} - {{ examen.estado }}
+            {% if examen.archivo %}
+                <a href="{{ examen.archivo.url }}" target="_blank">Ver archivo</a>
+                {% if not consulta.resultados_enviados %}
+                    {% for group in request.user.groups.all %}
+                        {% if group.name == "Pacientes" %}
+                            <a href="{% url 'A31_Con:bajar_resultado_examen' examen.id %}">Bajar archivo </a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% else %}
+                {% if not consulta.resultados_enviados %}
+                    {% for group in request.user.groups.all %}
+                        {% if group.name == "Pacientes" %}
+                            <a href="{% url 'A31_Con:subir_resultado_examen' examen.id %}">Subir archivo</a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+{% if todos_examenes_subidos and not consulta.resultados_enviados %}
+    <form method="post" action="{% url 'A31_Con:enviar_resultados_al_medico' consulta.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn but-go">Enviar Resultados al Médico</button>
+    </form>
+{% elif consulta.resultados_enviados %}
+    <button type="button" class="btn btn-secondary" disabled>Resultados Enviados al Médico</button>
+{% endif %}
+
+
+<br><br>
+<h2>Medicamentos Prescritos</h2>
+<hr>
+<ul>
+    {% for receta in consulta.consulta_recetas.all %}
+    <li>{{ receta.medicamento.nombre_gen }} ({{ receta.medicamento.nombre_com }}) - Vía: {{ receta.via }}, Dosis: {{ receta.dosis }}, Frecuencia: {{ receta.frecuencia }}, Duración: {{ receta.duracion }}</li>
+    {% endfor %}
+</ul>
+
+<br>
+<h2>Certificado Médico</h2>
+<hr>
+<p><strong>Lugar de Emisión:</strong> {{ consulta.consulta_certificados.first.lugar_emision }}</p>
+<p><strong>Dirigido a:</strong> {{ consulta.consulta_certificados.first.dirigido_a }}</p>
+<p><strong>Email empleador:</strong> {{ consulta.consulta_certificados.first.email_empleador }}</p>
+<p><strong>Antecedentes:</strong> {{ consulta.consulta_certificados.first.antecedentes }}</p>
+<p><strong>Diagnóstico:</strong> {{ consulta.consulta_certificados.first.diagnosis }}</p>
+<p><strong>Recomendaciones:</strong> {{ consulta.consulta_certificados.first.recomendaciones }}</p>
+<p><strong>Inicio:</strong> {{ consulta.consulta_certificados.first.inicio }}</p>
+<p><strong>Término:</strong> {{ consulta.consulta_certificados.first.termino }}</p>
+
+<br>
+<h2>Imágenes</h2>
+<hr>
+<ul>
+    {% if imagenes %}
+        {% for imagen in imagenes %}
+            <li>
+                {% if imagen.imagen %}
+                    <img src="{{ imagen.imagen.url }}" alt="Imagen de consulta" style="max-width: 200px;">
+                    <p>{{ imagen.diagnostico }}</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    {% else %}
+        <p> No hay imágenes disponibles. </p>
+    {% endif %}
+</ul>
+
+<br>
+<h2>Baja tus documentos</h2>
+<hr>
+<p class="d-inline-flex gap-1">
+    <a href="{% url 'A31_Con:imprimir_orden_examen' consulta.id %}" class="btn btn-primary"><i class="bi bi-printer-fill"> &nbsp; Orden de Exámenes</i></a>
+    <a href="{% url 'A31_Con:imprimir_prescripcion' consulta.id %}" class="btn btn-primary"><i class="bi bi-printer-fill"> &nbsp; Prescripción</i></a>
+    <div class="btn-group" role="group" aria-label="Basic outlined example">
+        <button type="button" class="btn btn-outline-primary">Certificado Médico</button>
+        <a href="{% url 'A31_Con:imprimir_certificado' consulta.id %}" class="btn btn-primary"><i class="bi bi-printer-fill"></i></a>
+        <form method="post" action="{% url 'A31_Con:enviar_email_certificado' consulta.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary"><i class="bi bi-envelope-arrow-up-fill"></i></button>
+        </form>
+    </div>
+    <a href="{% url 'A31_Con:consultas' %}" class="btn but-go"><i class="bi bi-arrow-counterclockwise"> &nbsp; Volver</i></a>
+    {% comment %} <button class="btn btn-secondary" onclick="enviarEmailCertificado({{ consulta.id }})">Enviar Certificado por Email</button> {% endcomment %}
+</p>
+
+
+
+<script>
+function enviarEmailCertificado(consultaId) {
+    fetch(`/enviar_email_certificado/${consultaId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ consulta_id: consultaId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Certificado enviado por email exitosamente.');
+        } else {
+            alert('Error al enviar el certificado por email.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al enviar el certificado por email.');
+    });
+}
+</script>
+
+{% endblock %}

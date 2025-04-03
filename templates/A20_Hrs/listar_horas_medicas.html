@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header hstack gap-1 justify-content-evenly ">
+        <div class="card m-1" style="max-width: auto;">
+            <div class="row g-0">
+                <div class="col-md-2">
+                    <img src="{% static 'images/tomar_hora.jpeg'%}" class="img-fluid rounded-start" alt="...">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h3 class="card-title"><strong>Listado General de Horas Médicas</strong></h3>
+                        <hr>
+                        <p class="col col-2"><h4><strong>{% now "d-m-Y" %}</h3></strong></p>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="col col-2 m-2"><a href="{% url 'A20_Hrs:crear_hora_medica' %}" class="btn btn-primary btn-sm"><i class="bi bi-plus-square-fill" >&nbsp;&nbsp;Agregar Hora Médica</i></a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+    {% if horas_medicas %}
+        <table class="table table-hover table-success table-bordered" style="text-align:center; font-size:15px" id="example">
+            <thead>
+                <tr>
+                    <th style="width:8%">Fecha y Hora</th>
+                    <th style="width:10%">Especialidad</th>
+                    <th style="width:15%">Médico</th>
+                    <th style="width:20%">Sist. Salud Médico</th>
+                    <th style="width:15%">Paciente</th>
+                    <th style="width:8%">Estado</th>
+                    <th style="width:8%">Costo</th>
+                    <th style="width:15%">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hora in horas_medicas %}
+                    <tr>
+                        <td scope="row">{{ hora.f_hra|date:'Y-m-d-j:s' }}</td>
+                        <td>{% for especialidad in hora.medico.especialidad.all %}  {# .all() es importante #}
+                            {{ especialidad.name }} {% if not forloop.last %}, {% endif %}  {# Coma entre especialidades #}
+                        {% endfor %}</td>
+                        <td>{{ hora.medico }}</td>
+                        <td>{% for sistema in hora.medico.sists_salud.all %}  {# .all() es importante #}
+                            {{ sistema.name }} {% if not forloop.last %}, {% endif %}  {# Coma entre especialidades #}
+                        {% endfor %}</td>
+                        <td>{{ hora.paciente }}</td> {# Manejo de paciente sin asignar #}
+                        <td>{{ hora.get_estado_display }}</td>
+                        <td>{{ hora.costo }}</td>
+                        <td >
+                            {% if not hora.paciente and hora.estado != "anulada" %}
+                                <a href="{% url 'A20_Hrs:solicitar_horapara_desdehora' hora.id %}" class='btn btn-primary' title='Tomar'><i class="bi bi-person-raised-hand"></i></a>
+                            {% endif %}
+                            {% if hora.paciente and hora.estado == "tomada" %}
+                                <form method="post" action="{% url 'A20_Hrs:liberar_hora_para' hora.paciente.user.id %}">  {# Agrega un formulario #}
+                                    {% csrf_token %}
+                                    <input type="hidden" name="hora_medica_id" value="{{ hora.id }}">  {# Input oculto con el ID de la hora #}
+                                    <button type="submit" class='btn btn-warning' title='Liberar'><i class="bi bi-pencil-fill"></i></button>
+                                </form>
+                            {% endif %}
+                            {% if hora.pagada == False %}
+                                <a href="{% url 'A20_Hrs:registrar_pago_efectivo' hora.id %}" class='btn btn-success' title='Efectivo'><i class="bi bi-currency-dollar"></i></a>
+                                <a href="{% url 'A20_Hrs:registrar_pago_bono' hora.id %}" class='btn btn-secondary' title='Bono Isapre'><i class="bi bi-card-heading"></i></a>
+                                <a href="{% url 'A20_Hrs:registrar_pago_tarjeta' hora.id %}" class='btn btn-info' title='Tarjeta de Crédito'><i class="bi bi-credit-card"></i>  {# Icono de tarjeta de crédito #}
+                                </a>
+                            {% endif %}
+                        </td>
+                        {% comment %} <td> {% endcomment %}
+                            {% comment %} <a href="{% url 'editar_hora_medica' hora.id %}">Editar</a> {% endcomment %}
+                            {% comment %} <a href="{% url 'eliminar_hora_medica' hora.id %}">Eliminar</a> {% endcomment %}
+                        {% comment %} </td> {% endcomment %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay horas médicas registradas.</p>
+    {% endif %}
+    </div>
+</div>
+<a href="">Crear nueva hora médica</a>
+
+
+<hr>
+<p class="d-inline-flex gap-1">
+    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+      Link with href
+    </a>
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+      Button with data-bs-target
+    </button>
+  </p>
+  <div class="collapse" id="collapseExample">
+    <div class="card card-body">
+      Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+    </div>
+  </div>
+<hr>
+
+<script>
+    const collapseElementList = document.querySelectorAll('.collapse')
+    const collapseList = [...collapseElementList].map(collapseEl => new bootstrap.Collapse(collapseEl))
+</script>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Reasignar Ficha Médica</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="medico">Nuevo Médico:</label>
+    <select id="medico" name="medico" required>
+        {% for medico in medicos %}
+            <option value="{{ medico.id }}">{{ medico.user.first_name }} {{ medico.user.last_name }}</option>
+        {% endfor %}
+    </select><br>
+    <button type="submit">Reasignar Ficha Médica</button>
+</form>
+
+{% endblock %}

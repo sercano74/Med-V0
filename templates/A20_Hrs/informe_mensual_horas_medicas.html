@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Informe Mensual de Horas Médicas</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="row m-2 ">
+            <label class="col-sm-1 col-form-label" for="mes">Mes:</label>
+            <div class="col-sm-4">
+                <select class="form-select" aria-label="Default select example" name="mes" id="mes">
+                    <option value="1" {% if mes_seleccionado == '1' %}selected{% endif %}>Enero</option>
+                    <option value="2" {% if mes_seleccionado == '2' %}selected{% endif %}>Febrero</option>
+                    <option value="3" {% if mes_seleccionado == '3' %}selected{% endif %}>Marzo</option>
+                    <option value="4" {% if mes_seleccionado == '4' %}selected{% endif %}>Abril</option>
+                    <option value="5" {% if mes_seleccionado == '5' %}selected{% endif %}>Mayo</option>
+                    <option value="6" {% if mes_seleccionado == '6' %}selected{% endif %}>Junio</option>
+                    <option value="7" {% if mes_seleccionado == '7' %}selected{% endif %}>Julio</option>
+                    <option value="8" {% if mes_seleccionado == '8' %}selected{% endif %}>Agosto</option>
+                    <option value="9" {% if mes_seleccionado == '9' %}selected{% endif %}>Septiembre</option>
+                    <option value="10" {% if mes_seleccionado == '10' %}selected{% endif %}>Octubre</option>
+                    <option value="11" {% if mes_seleccionado == '11' %}selected{% endif %}>Noviembre</option>
+                    <option value="12" {% if mes_seleccionado == '12' %}selected{% endif %}>Diciembre</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row m-2 ">
+            <label class="col-sm-1 col-form-label" for="anio">Año:</label>
+            <div class="col-sm-4">
+                <input type="number" name="anio" id="anio" value="{% if anio_seleccionado %}{{ anio_seleccionado }}{% else %}2025{% endif %}">
+            </div>
+        </div>
+        <button class="btn btn-info" type="submit">Generar Informe</button>
+    </form>
+
+    {% if consulta_realizada %}  {# Mostrar la tabla solo si se ha enviado el formulario #}
+        {% if pagos_del_mes %}  {# Mostrar la tabla solo si hay datos #}
+            <br><hr><br>
+            <div class= "row m-2">
+                <div class="col col-md-6"><h2>Informe Mensual de Horas Médicas - {{ mes_formateado }}</h2></div>
+                <div class="col col-md-2">
+                    <a href="{% url 'A20_Hrs:informe_mensual_horas_medicas' %}?pdf&mes={{ mes_seleccionado }}&anio={{ anio_seleccionado }}" class="btn btn-primary" target="_blank">Descargar PDF</a>
+                </div> {# Enlace para descargar PDF #}
+            </div>
+
+            <h3>Detalle del Mes:</h3>
+            <table class="table table-bordered table-secondary table-hover">
+                <thead>
+                    <tr>
+                        <th>Médico</th>
+                        <th>Hora Médica</th>
+                        <th>Paciente</th>
+                        <th>Tipo de Pago</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pago in pagos_del_mes %}
+                        <tr>
+                            <td>{{ pago.hora_medica.medico.user.first_name }} {{ pago.hora_medica.medico.user.last_name }}</td>
+                            <td>{{ pago.hora_medica.f_hra }}</td>
+                            <td>{{ pago.hora_medica.paciente.user.first_name }} {{ pago.hora_medica.paciente.user.last_name }}</td>
+                            <td>{{ pago.tipo_pago }}</td>
+                            <td>{{ pago.monto }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Subtotales por Médico:</h3>
+            <table class="table table-bordered table-secondary table-hover">
+                <thead>
+                    <tr>
+                        <th>Médico</th>
+                        <th>Efectivo</th>
+                        <th>Bono</th>
+                        <th>Tarjeta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medico, subtotales in subtotales_medico.items %}
+                        <tr>
+                            <td>{{ medico.user.first_name }} {{ medico.user.last_name }}</td>
+                            <td>{{ subtotales.efectivo }}</td>
+                            <td>{{ subtotales.bono }}</td>
+                            <td>{{ subtotales.tarjeta }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Subtotales por Tipo de Pago:</h3>
+            <table class="table table-bordered table-secondary table-hover">
+                <thead>
+                    <tr>
+                        <th>Tipo de Pago</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tipo_pago, monto in subtotales_tipo_pago.items %}
+                        <tr>
+                            <td>{{ tipo_pago }}</td>
+                            <td>{{ monto }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Total Mensual: {{ total_mes }}</h3>
+        {% comment %} {% else %}
+            <p>Este periodo no tiene pagos que computar.</p> {% endcomment %}
+        {% endif %}  {# Fin del bloque if #}
+    {% endif %}
+
+{% endblock %}

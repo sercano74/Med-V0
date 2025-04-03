@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Listado General De Fichas Médicas</h1>
+
+<div class="d-flex justify-content-center">
+    <div id="spinner" class="spinner-border text-danger" role="status" style="display: none;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div id="contenido_principal">  </div>
+
+{% for group in request.user.groups.all %}
+
+    {% if group.name == "Jefes de Plataforma" or request.user.is_superuser %}
+        <div id="jefe_plataforma_content" style="display: none;">
+        {% if fichas_medicas %}
+            <ul>
+                {% for ficha in fichas_medicas %}
+                    <li>
+                        {{ ficha.id }})&nbsp;&nbsp; {{ ficha.medico }} / {{ ficha.paciente }} - {{ ficha.f_consulta|date:"l, d/m/Y H:i" }} [ {{ ficha.estado }} ]
+                        &nbsp;<a href="{% url 'A30_Fic:reasignar_ficha_medica' ficha.id %}">Reasignar</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% comment %} {% else %}
+            <p>No tienes fichas médicas.</p> {% endcomment %}
+        {% endif %}
+        </div>
+    {% endif %}
+
+    {% if group.name == "Pacientes" %}
+        <div id="pacientes_content" style="display: none;">
+        {% if fichas_medicas %}
+            <ul>
+                {% for ficha in fichas_medicas %}
+                    <li>
+                        {{ ficha.id }})&nbsp;&nbsp; {{ ficha.medico }} / {{ ficha.paciente }} - {{ ficha.f_consulta|date:"l, d/m/Y H:i" }} [ {{ ficha.estado }} ]
+                        &nbsp;<a href="{% url 'A30_Fic:ver_perfilout' user.id %}">Ver perfil del paciente</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% comment %} {% else %}
+            <p>No tienes fichas médicas.</p> {% endcomment %}
+        {% endif %}
+        </div>
+    {% endif %}
+
+{% endfor %}
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $("#spinner").show(); // Mostrar el spinner inmediatamente
+
+        $.ajax({
+            url: '/fichas_medicas/listar_fichas_medicas_ajax/', // URL para la vista AJAX (ver abajo)
+            type: 'GET',
+            success: function(data) {
+                console.log("Respuesta AJAX:", data); // Imprime la respuesta en la consola
+                $("#spinner").hide(); // Ocultar el spinner cuando la respuesta llega
+                $("#contenido_principal").html(data.html);
+                $("#jefe_plataforma_content").html($("#jefe_plataforma_content", data.html).html())
+                $("#pacientes_content").html($("#pacientes_content", data.html).html())
+                $("#jefe_plataforma_content").show();
+                $("#pacientes_content").show();
+
+            },
+            error:function(xhr,status,error) {
+                console.error("Error en la llamada AJAX:", status, error); // Imprime errores en la consola
+                $("#spinner").hide(); // Oculta el spinner incluso en caso de error
+                $("#contenido_principal").html("<p>Ocurrió un error al cargar los datos.</p>"); // Muestra un mensaje de error
+            },
+        });
+    });
+</script>
+
+{% endblock %}

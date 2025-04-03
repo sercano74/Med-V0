@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Perfil de {{ user.username }}</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {% if user.imagen %}
+                <img src="{{ user.imagen.url }}" alt="Foto de perfil" class="img-fluid">
+            {% else %}
+                <img src="{% static 'images/no-image-icon.png' %}" alt="Foto de perfil" class="img-fluid">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="first_name">Nombre:</label>
+                <input type="text" id="first_name" class="form-control" value="{{ user.first_name }} {{ user.last_name }}" disabled>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" class="form-control" value="{{ user.email }}" disabled>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if not medico %}
+                    <p><strong>Estado:</strong> {{ user.is_active|yesno:"Activo,Inactivo" }}</p>
+                {% endif %}
+
+                <div class="form-group">
+                    <label for="tel_pers">Teléfono Personal:</label>
+                    <input type="text" name="tel_pers" id="tel_pers" class="form-control" value="{{ user.tel_pers }}">
+                </div>
+                <div class="form-group">
+                    <label for="name_emerg">Nombre de Emergencia:</label>
+                    <input type="text" name="name_emerg" id="name_emerg" class="form-control" value="{{ user.name_emerg }}">
+                </div>
+                <div class="form-group">
+                    <label for="tel_emerg">Teléfono de Emergencia:</label>
+                    <input type="text" name="tel_emerg" id="tel_emerg" class="form-control" value="{{ user.tel_emerg }}">
+                </div>
+                <div class="form-group">
+                    <label for="imagen">Imagen de Perfil:</label>
+                    <input type="file" name="imagen" id="imagen" class="form-control-file">
+                </div>
+
+                {% if medico %}
+                    <div class="form-group">
+                        <label for="curriculum">Curriculum:</label>
+                        <textarea name="curriculum" id="curriculum" class="form-control">{{ medico.curriculum }}</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Especialidades Actuales:</label><br>
+                                {% for especialidad in especialidades_actuales %}
+                                    {{ especialidad.name }}<br>
+                                    <input type="checkbox" name="retirar_especialidades" value="{{ especialidad.id }}"> Retirar<br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Otras Especialidades:</label><br>
+                                {% for especialidad in especialidades %}
+                                    {% if especialidad not in especialidades_actuales %}
+                                        <input type="checkbox" name="especialidades" value="{{ especialidad.id }}" {% if especialidad.id in especialidades_seleccionadas %}checked{% endif %}> {{ especialidad.name }}<br>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Sistemas de Salud Actuales:</label><br>
+                                {% for sistema in sistemas_actuales %}
+                                    {{ sistema.name }}<br>
+                                    <input type="checkbox" name="retirar_sistemas" value="{{ sistema.id }}"> Retirar<br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Otros Sistemas de Salud:</label><br>
+                                {% for sistema in sistemas %}
+                                    {% if sistema not in sistemas_actuales %}
+                                        <input type="checkbox" name="sistemas" value="{{ sistema.id }}" {% if sistema.id in sistemas_seleccionados %}checked{% endif %}> {{ sistema.name }}<br>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% elif paciente %}
+                    <div class="form-group">
+                        <label for="grupoSangre">Grupo Sanguíneo:</label>
+                        <select name="grupoSangre" id="grupoSangre" class="form-control">
+                            {% for value, label in paciente.gruposSangre %}
+                                <option value="{{ value }}" {% if paciente.grupoSangre == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="enfermedades">Enfermedades:</label>
+                        <textarea name="enfermedades" id="enfermedades" class="form-control">{{ paciente.enfermedades }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="cirugias">Cirugías:</label>
+                        <textarea name="cirugias" id="cirugias" class="form-control">{{ paciente.cirugias }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="alergias">Alergias:</label>
+                        <textarea name="alergias" id="alergias" class="form-control">{{ paciente.alergias }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="sistema_salud">Sistema de Salud:</label>
+                        <select name="sistema_salud" id="sistema_salud" class="form-control">
+                            {% for sistema in sistemas %}
+                                <option value="{{ sistema.id }}" {% if paciente.sistema_salud == sistema %}selected{% endif %}>{{ sistema.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+
+                <button type="submit" name="actualizar_perfil" class="btn but-add">Actualizar Perfil</button>
+            </form>
+
+            {% if "Jefes de Plataforma" in request.user.groups.all|stringformat:"s" %}
+            <hr>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="estado">Modificar Estado:</label>
+                        <select name="estado" id="estado" class="form-control">
+                            <option value="activo" {% if user.is_active %}selected{% endif %}>Activo</option>
+                            <option value="inactivo" {% if not user.is_active %}selected{% endif %}>Inactivo</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn but-del">Desactivar Usuario</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

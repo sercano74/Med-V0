@@ -1,0 +1,79 @@
+<!-- filepath: /c:/Users/sergi/OneDrive/Escritorio/ProyectosDjango/Med/templates/A30_Fic/listar_pacientes.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="row m-2">
+        <!-- Aside con filtros y botón Agregar usuario -->
+        <aside class="col col-2">
+            <h2>Filtros</h2>
+            <hr>
+            <form method="get" class="mb-3">
+                <div class="form-group">
+                    <label for="rol">Filtrar por Rol:</label>
+                    <select name="rol" id="rol" class="form-control">
+                        <option value="">Todos</option>
+                        {% for role in roles %}
+                            <option value="{{ role.name }}" {% if role.name == selected_rol %}selected{% endif %}>{{ role.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Filtrar por Nombre o Apellido:</label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" value="{{ apellido }}">
+                </div>
+                <button type="submit" class="btn but-fil">Filtrar</button>
+            </form>
+            <hr class="mb-5">
+            <a href="{% url 'A10_Usu:registro_usuario' %}" class="btn but-add mb-5"><i class="bi bi-plus-circle"></i>&nbsp;Agregar Usuario</a>
+        </aside>
+
+        <!-- Tabla con los usuarios -->
+        <main class="col col-10">
+            <h1>Listado General de Usuarios Activos</h1>
+            {% if usuarios %}
+                <table class="table table-secondary table-hover table-striped"  id="example">
+                    <thead>
+                        <tr>
+                            <th>user.id</th>
+                            <th>paciente.id</th>
+                            <th>Rol</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                            <th>Gestión</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in usuarios %}
+                            <tr>
+                                <td>{{ user.id }}{{user.group.name}}</td>
+                                <td>{% if user.group.name == 'Pacientes' %}
+                                {{ user.id }}
+                                {% else %}
+                                no
+                                {% endif %}</td>
+                                <td>{{ user.role }}</td>
+                                <td>{{ user.first_name }}</td>
+                                <td>{{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <a class="btn but-go" href="{% url 'A10_Usu:ver_perfilout' user.id %}" >&raquo; Ver Perfil</a>
+                                    {% comment %} <a href="{% url 'A30_Fic:ver_consultas_paciente' user.id %}" class="btn btn-warning btn-sm">Ver Consultas</a> {% endcomment %}
+                                    {% if user.is_paciente %}
+                                        <a class="btn but-go" href="{% url 'A31_Con:informe_historico' user.id %}" >&raquo; Ver Informes</a>
+                                        <a class="btn but-add" href="{% url 'A20_Hrs:solicitar_horapara' user.id %}" >&raquo;Solicitar Hora</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No se encontraron resultados.</p>
+            {% endif %}
+
+        </main>
+    </div>
+
+{% endblock %}

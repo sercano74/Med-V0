@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="card" style="max-width: 100rem;">
+    <div class="card-header">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <img src="{% static 'images/pacientes.jpeg' %}" class="img-fluid rounded-start" alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">Consulta Médica</h5>
+                    <p class="card-text"><strong>Paciente:</strong> {{ paciente.user.first_name }} {{paciente.user.last_name}}</p>
+                    <p class="card-text"><strong>RUT:</strong> {{ paciente.user.dni }}</p>
+                    <p class="card-text"><strong>Médico:</strong> {{ medico.user.first_name }} {{medico.user.last_name}} </p>
+                    <p class="card-text"><small class="text-body-secondary"><strong>Fecha:</strong> {{ now }}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <form method="POST" action = {{ action_url }}>
+            {% csrf_token %}
+            <h5 class="card-title">Triage</h5>
+            <div class="row" >
+                <div class= "col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text" for="temperatura" >Temperatura (°C)</span>
+                        <input class="form-control" id="temperatura" name="temperatura" aria-label="With textarea" required></input>
+                    </div>
+                </div>
+                <div class= "col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text" for="p_sistolica">P. Sistólica (Mgmm)</span>
+                        <input class="form-control" id="p_sistolica" name="p_sistolica" aria-label="With textarea" required></input>
+                    </div>
+                </div>
+                <div class= "col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text" for="p_diastolica">P. Diastólica (Mgmm)</span>
+                        <input class="form-control" id="p_diastolica" name="p_diastolica" aria-label="With textarea" required></input>
+                    </div>
+                </div>
+            </div>
+            <div class="row" >
+                <div class= "col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text" for="altura" >Altura (cm)</span>
+                        <input class="form-control" id="altura" name="altura" aria-label="With textarea"  oninput="calcularIMC()" required></input>
+                    </div>
+                </div>
+                <div class= "col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text" for="peso">Peso (gr)</span>
+                        <input class="form-control" id="peso" name="peso" aria-label="With textarea"  oninput="calcularIMC()" required></input>
+                    </div>
+                </div>
+                <div class= "col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text" for="imc">IMC </span>
+                        <input class="form-control" id="imc" name="imc" aria-label="With textarea" disabled></input>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group m-2">
+                <span class="input-group-text">Notas</span>
+                <textarea class="form-control" id="notas" name="notas" aria-label="With textarea" required></textarea>
+            </div>
+            <hr>
+            <h5 class="card-title">Evaluación Médica</h5>
+            <div class="input-group m-2">
+                <span class="input-group-text">Síntomas</span>
+                <textarea class="form-control" id="sintomas" name="sintomas" aria-label="With textarea" required></textarea>
+            </div>
+            <div class="input-group m-2">
+                <span class="input-group-text">Diagnóstico</span>
+                <textarea class="form-control" id="diagnostico" name="diagnostico" aria-label="With textarea" required></textarea>
+            </div>
+            <div class="input-group m-2">
+                <span class="input-group-text">Prescripción</span>
+                <textarea class="form-control" id="prescripcion" name="prescripcion" aria-label="With textarea" required></textarea>
+            </div>
+
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+
+            <button class="btn btn-primary" type="submit">Grabar Ficha Médica</button>
+            <button type="button" class="btn btn-warning">Imprimir</button>
+            <a href="" class="btn btn-danger">Agendar Próxima Consulta</a>
+        </form>
+    </div> <!-- End / card-body -->
+    <div class="card-footer text-body-secondary">
+        HumanaSalud - 2025
+    </div>
+</div>
+
+<script>
+    function calcularIMC() {
+        const altura = parseFloat(document.getElementById("altura").value) / 100; // Convertir a metros
+        const peso = parseFloat(document.getElementById("peso").value);
+        const imcField = document.getElementById("imc");
+        const sistolica = parseInt(document.getElementById("p_sistolica").value);
+        const diastolica = parseInt(document.getElementById("p_diastolica").value);
+        const notasField = document.getElementById("notas");
+
+// Limpiar recomendaciones anteriores (opcional, pero recomendado)
+notasField.value = notasField.value.replace(/Recomendaciones IMC:.*$/ms, '');
+notasField.value = notasField.value.replace(/Recomendaciones Presión Arterial:.*$/ms, '');
+
+if (altura && peso) {
+    const imc = peso / (altura * altura);
+    imcField.value = imc.toFixed(2);
+
+    // Agregar recomendaciones basadas en el IMC
+    let recomendacionesIMC = "Recomendaciones IMC:\n";
+    if (imc < 18.5) {
+        recomendacionesIMC += "- Peso bajo. Consulte a un nutricionista.\n";
+    } else if (imc < 25) {
+        recomendacionesIMC += "- Peso normal. ¡Siga manteniendo un estilo de vida saludable!\n";
+    } else if (imc < 30) {
+        recomendacionesIMC += "- Sobrepeso. Considere aumentar la actividad física y mejorar su alimentación.\n";
+    } else {
+        recomendacionesIMC += "- Obesidad. Consulte a un médico y a un nutricionista.\n";
+    }
+
+
+    // Agregar recomendaciones basadas en la presión arterial
+    let recomendacionesPA = "Recomendaciones Presión Arterial:\n";
+    if (sistolica < 120 && diastolica < 80) {
+        recomendacionesPA += "- Presión arterial normal. ¡Siga manteniendo un estilo de vida saludable!\n";
+    } else if (sistolica < 130 && diastolica < 85) {
+        recomendacionesPA += "- Presión arterial normal-alta. Considere adoptar hábitos de vida más saludables.\n";
+    } else if (sistolica < 140 && diastolica < 90) {
+        recomendacionesPA += "- Hipertensión grado 1. Consulte a su médico para un diagnóstico y plan de tratamiento.\n";
+    } else if (sistolica < 160 && diastolica < 100) {
+        recomendacionesPA += "- Hipertensión grado 2. Consulte a su médico para un diagnóstico y plan de tratamiento.\n";
+    } else if (sistolica >= 160 || diastolica >= 100) {
+        recomendacionesPA += "- Hipertensión grado 3. Consulte a su médico de inmediato!!\n";
+    }
+
+    notasField.value += recomendacionesIMC + recomendacionesPA; // Agregar ambas recomendaciones
+
+} else {
+    imcField.value = "";
+}
+} // Cierre de la función calcularIMC()
+
+
+// Eventos para calcular el IMC al presionar Enter en altura y peso
+document.getElementById("altura").addEventListener("keypress", function(event) {
+if (event.key === "Enter") {
+    event.preventDefault();
+    calcularIMC();
+}
+});
+
+document.getElementById("peso").addEventListener("keypress", function(event) {
+if (event.key === "Enter") {
+    event.preventDefault();
+    calcularIMC();
+}
+});
+
+// Llamar a calcularIMC() al cargar la página para mostrar recomendaciones iniciales (opcional)
+window.addEventListener('DOMContentLoaded', calcularIMC);
+
+
+</script>
+
+
+
+
+
+
+
+
+{% comment %} <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+    <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({% static 'images/pacientes.jpeg' %});background-size: cover; background-position: center;">
+            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                <h2 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold" >Humana Salud</h2><br><h3>Tu salud, nuestro compromiso.</h3>
+                <ul class="d-flex list-unstyled mt-auto">
+                    <li class="me-auto">
+                        <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
+                    </li>
+                    <li class="d-flex align-items-center me-3">
+                        <svg class="bi me-2" width="1em" height="1em"><use xlink:href="#geo-fill"/></svg>
+                        <small>Earth</small>
+                        </li>
+                    <li class="d-flex align-items-center">
+                        <svg class="bi me-2" width="1em" height="1em"><use xlink:href="#calendar3"/></svg>
+                        <small>3d</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+{% endblock %}

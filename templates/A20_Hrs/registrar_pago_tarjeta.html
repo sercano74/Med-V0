@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Pago con Tarjeta de Crédito</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="numero_tarjeta">Número de Tarjeta:</label>
+    <input type="text" name="numero_tarjeta" id="numero_tarjeta">
+    <br>
+    <label for="numero_transaccion">Número de Transaccion:</label>
+    <input type="text" name="numero_transaccion" id="numero_transaccion">
+    <br>
+    <label for="monto">Monto:</label>
+    <input type="text" name="monto" id="monto" value="hora_medica.costo" disabled>
+    {# ... otros campos para la tarjeta (fecha de expiración, código de seguridad, etc.) #}
+    <br>
+    <button type="submit">Registrar Pago</button>
+</form>
+
+<a href="{% url 'A20_Hrs:listar_horas_medicas' %}">Cancelar</a>  {# Enlace para cancelar #}
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Modificar Ficha Médica</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="temperatura">Temperatura:</label>
+    <input type="text" id="temperatura" name="temperatura" value="{{ ficha.temperatura }}" required><br>
+    <label for="p_sistolica">Presión Sistólica:</label>
+    <input type="text" id="p_sistolica" name="p_sistolica" value="{{ ficha.p_sistolica }}" required><br>
+    <label for="p_diastolica">Presión Diastólica:</label>
+    <input type="text" id="p_diastolica" name="p_diastolica" value="{{ ficha.p_diastolica }}" required><br>
+    <label for="altura">Altura:</label>
+    <input type="text" id="altura" name="altura" value="{{ ficha.altura }}" required><br>
+    <label for="peso">Peso:</label>
+    <input type="text" id="peso" name="peso" value="{{ ficha.peso }}" required><br>
+    <label for="diagnostico">Diagnóstico:</label>
+    <textarea id="diagnostico" name="diagnostico" required>{{ ficha.diagnostico }}</textarea><br>
+    <label for="prescripcion">Prescripción:</label>
+    <textarea id="prescripcion" name="prescripcion" required>{{ ficha.prescripcion }}</textarea><br>
+    <label for="notas">Notas:</label>
+    <textarea id="notas" name="notas">{{ ficha.notas }}</textarea><br>
+    <label for="estado">Estado:</label>
+    <select id="estado" name="estado" required>
+        <option value="Abierta" {% if ficha.estado == 'Abierta' %}selected{% endif %}>Abierta</option>
+        <option value="Cerrada" {% if ficha.estado == 'Cerrada' %}selected{% endif %}>Cerrada</option>
+    </select><br>
+    <button type="submit">Modificar Ficha Médica</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+{% comment %} {% load humanize %} {% endcomment %}
+{% block title %}404{% endblock %}
+
+
+{% block content %}
+<section class="card content">
+	<h6 class="display-1 card-title text-center">PÁGINA NO DISPONIBLE</h6>
+
+	<hr>
+	<div class="row justify-content-md-center" data-masonry='{"percentPosition": true }'>
+		<div class="col-sm-6 col-lg-4 mb-4">
+			<div class="card bg-secondary text-white">
+				<img class="img-thumbnail" src="{% static 'images/parametros.jpeg'%}" style="height:30rem; width: auto;" >
+			</div>
+		</div>
+		<div class="col-sm-6 col-lg-4 mb-4 justify-content-center">
+			<h1>Error 404: Página no encontrada</h1>
+			<p>Lo sentimos, la página que has solicitado no existe o ha sido eliminada.</p>
+			<hr>
+			<a href="{% url 'home'  %}"><strong class="d-inline-block mb-2 text-primary ">Ir al Home</strong></a>
+			<a href="javascript:history.back()">Volver a la página anterior</a>
+		</div>
+	</div>
+</section>
+{% endblock content %}

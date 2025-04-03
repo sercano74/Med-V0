@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Resumen de Consultas de {{ paciente.user.get_full_name }}</h1>
+<table id="example" class="table table-bordered border-primary table-success table-hover" >
+    <thead>
+        <tr>
+            <th>Consulta Id</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th> Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for consulta in consultas %}
+            <tr>
+                <td>{{ consulta.id }}</td>
+                <td>{{consulta.hora_medica.f_hra}}</td>
+                <td>{{consulta.estado}}</td>
+                <td>
+                    <a class="btn but-go" href="{% url 'A31_Con:consulta_detalle' consulta.id %}">Ver Consulta</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

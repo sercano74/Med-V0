@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Mis Fichas Médicas</h1>
+
+{% if fichas_medicas %}
+    <ul>
+        {% for ficha in fichas_medicas %}
+            <li>
+                {{ ficha.f_consulta|date:"l, d/m/Y H:i" }} - {{ ficha.estado }} -
+                <a href="{% url 'A30_Fic:modificar_ficha_medica' ficha.id %}">Modificar</a>
+                <a href="{% url 'A30_Fic:reasignar_ficha_medica' ficha.id %}">Reasignar</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No tienes fichas médicas.</p>
+{% endif %}
+{% endblock %}

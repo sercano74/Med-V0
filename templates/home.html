@@ -1,0 +1,248 @@
+<!-- home.html -->
+{% extends 'base.html' %}
+
+{% load static  %}
+
+{% block content %}
+
+<!-- Saludo de bienvenida -->
+<div class="container mt-4" style="text-align: end; color:rgb(105, 175, 236); font-size: 0.5em; font-family: Times;">
+    {% if user.is_authenticated %}
+        <h1> Hola,
+        {% if request.user.first_name %}
+            {{ request.user.first_name }} {{ request.user.last_name }}
+        {% else %}
+            {{ request.user.username }}
+        {% endif %}
+        , bienvenido a HumanaSalud</h1>
+    {% endif %}
+</div>
+
+<hr>
+<br>
+<div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="6000">
+            <img src="{% static 'images/carousel/PubliFarm.png' %}" class="d-block w-10 d-block mx-auto" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+            {% comment %} <h5>First slide label</h5>
+            <p>Some representative placeholder content for the first slide.</p> {% endcomment %}
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="6000">
+            <img src="{% static 'images/carousel/202503PubliCaEn.png' %}" class="d-block w-10 d-block mx-auto" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+            {% comment %} <h5>Second slide label</h5>
+            <p>Some representative placeholder content for the second slide.</p> {% endcomment %}
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="6000">
+            <img src="{% static 'images/carousel/202503PubliLab.png' %}" class="d-block w-10 d-block mx-auto" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+            {% comment %} <h5>Third slide label</h5>
+            <p>Some representative placeholder content for the third slide.</p> {% endcomment %}
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<br>
+<hr>
+
+<!-- Home del Superusuario y Jefe de Plataforma -->
+{% for group in request.user.groups.all %}
+    {% if group.name == "Jefes de Plataforma"  %}
+        <div class="container-fluid mt-3" style="background-color:rgb(174, 247, 247);">
+            <!-- Three columns of text below the carousel -->
+            <div class="row justify-content-lg-center">
+
+                <div parametros class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/parametros.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Parámetros</h2>
+                    <p>Aquí puedes ver de manera calendarizada todas las consultas programadas e iniciarlas</p>
+                    <p><a class="btn but-go" href="{% url 'A10_Usu:vista_parametros' %}">Ver &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div usuarios class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/pacientes.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Usuarios</h2>
+                    <p>Accede al listado de todos tus pacientes, sus datos y consultas pasadas y futuras programadas</p>
+                    <p><a class="btn but-go" href="{% url 'A10_Usu:usuarios' %}">Ver &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div horas class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/ver_tus_horas.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Horas Médicas</h2>
+                    <p>Aquí podrás ingresar a cada una de tus atenciones médicas para recordar prescripciones y más.</p>
+                    <p><a class="btn but-go" href="{% url 'A20_Hrs:calendario_horasmedicas' %}">View details &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div Consultas class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/mis_consultas.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Consultas Médicas</h2>
+                    <p>Este informe es una compilación de todas tus consultas, donde podrás ver tu evolución en el tiempo</p>
+                    {% comment %} <p><a class="btn btn-secondary" href="{% url 'A30_Fic:listar_fichas_medicas' %}" > View fichas &raquo;</a></p> {% endcomment %}
+                    <p><a class="btn but-go" href="{% url 'A31_Con:consultas' %}" > View consultas &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div InfMed class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/historial_medico.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Informes Médicos</h2>
+                    <p>Este informe es una compilación de todas tus consultas, donde podrás ver tu evolución en el tiempo</p>
+                    <p><a class="btn but-go" href="{% url 'A31_Con:consulta_informes' %}">View details &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div InfAdm class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/informes_administrativos.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Informes Administrativos</h2>
+                    <p>Este informe es una compilación de todas tus consultas, donde podrás ver tu evolución en el tiempo</p>
+                    <p><a class="btn but-go" href="{% url 'A20_Hrs:vistaInfAdm' %}">View details &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+    {% elif group.name == "Recepcionistas" %}
+    <!-- Devuelve un query con los grupos a los que pert el Recepcionista-->
+        {% if not request.user.is_superuser %}
+        <div class="container-fluid m-3" style="background-color:rgb(174, 247, 247);">
+            <!-- Three columns of text below the carousel -->
+            <div class="row justify-content-lg-center">
+
+                <div usuarios class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/pacientes.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Usuarios</h2>
+                    <p>Accede al listado de todos tus pacientes, sus datos y consultas pasadas y futuras programadas</p>
+                    <p><a class="btn but-go" href="{% url 'A10_Usu:usuarios' %}">Ver &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div horas class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/ver_tus_horas.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Horas Médicas</h2>
+                    <p>Aquí podrás ingresar a cada una de tus atenciones médicas para recordar prescripciones y más.</p>
+                    <p><a class="btn but-go" href="{% url 'A20_Hrs:calendario_horasmedicas' %}">View details &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div Consultas class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/mis_consultas.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Consultas Médicas</h2>
+                    <p>Este informe es una compilación de todas tus consultas, donde podrás ver tu evolución en el tiempo</p>
+                    {% comment %} <p><a class="btn btn-secondary" href="{% url 'A30_Fic:listar_fichas_medicas' %}" > View fichas &raquo;</a></p> {% endcomment %}
+                    <p><a class="btn but-go" href="{% url 'A31_Con:consultas' %}" > View consultas &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+                <div InfMed class="col col-lg-3 text-center m-2">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/historial_medico.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                    <h2>Informes Médicos</h2>
+                    <p>Este informe es una compilación de todas tus consultas, donde podrás ver tu evolución en el tiempo</p>
+                    <p><a class="btn but-go" href="{% url 'A31_Con:consulta_informes' %}">View details &raquo;</a></p>
+                </div><!-- /.col-lg-4 -->
+
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+
+{% if not request.user.is_superuser %}
+
+    {% for group in request.user.groups.all %}   <!-- Devuelve un query con los grupos a los que pert el Medico-->
+        {% if group.name == "Medicos" %}
+            <div class="container marketing mt-5">
+                <!-- Three columns of text below the carousel -->
+                <div class="row">
+
+                    <div class="col-lg-3">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/calendar.jpeg' %}); background-size: cover; background-position: center;">
+                            <title>Placeholder</title></svg>
+
+                        <h2>Mi Agenda</h2> but-go
+                        <p>Aquí puedes ver de manera calendarizada todas las consultas programadas e iniciarlas</p>
+                        <p><a class="btn but-go " href="{% url 'A20_Hrs:calendario_medico' %}">Ver &raquo;</a></p>
+                        <p><a class="btn but-go " href="{% url 'A20_Hrs:calendario_horasmedicas' %}">View details &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                    <div class="col-lg-3">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/pacientes.jpeg' %}); background-size: cover; background-position: center;">
+                            <title>Placeholder</title></svg>
+
+                        <h2>Mis pacientes</h2>
+                        <p>Accede al listado de todos tus pacientes, sus datos y consultas pasadas y futuras programadas</p>
+                        <p><a class="btn but-go " href="{% url 'A10_Usu:listar_pacientes' %}">Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                    <div fichas class="col col-lg-3 text-center m-2">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/mis_consultas.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                        <h2>Consultas Médicas</h2>
+                        <p>Este informe es una compilación de todas tus consultas, donde podrás ver tu evolución en el tiempo</p>
+                        <p><a class="btn but-go " href="{% url 'A30_Fic:listar_fichas_medicas' %}" > View fichas &raquo;</a></p>
+                        <p><a class="btn but-go " href="{% url 'A31_Con:consultas' %}" > View consultas &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+
+                </div><!-- /.row -->
+            </div><!-- /.container -->
+
+        {% endif %}
+    {% endfor %}
+
+    {% for group in request.user.groups.all %}   <!-- Devuelve un query con los grupos a los que pert el Paciente-->
+        {% if group.name == "Pacientes" %}
+            {% comment %} {% set paciente_id = request.user.id %} {% endcomment %}
+            <div class="container marketing mt-5">
+                <!-- Three columns of text below the carousel -->
+                <div class="row">
+                    <div class="col-lg-3">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/tomar_hora.jpeg' %}); background-size: cover; background-position: center;">
+
+                        <h2>Solicitar Hora</h2>
+                        <p>Aquí puedes buscar por especialidad o tu médico de confianza, ver las horas disponibles y reservar</p>
+                        <p><a class="btn but-go" href="{% url 'A20_Hrs:solicitar_hora' %}">Solicitar &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                    <div class="col-lg-3">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/ver_tus_horas.jpeg' %}); background-size: cover; background-position: center;">
+
+                        <h2>Ver Mis Horas</h2>
+                        <p>Aquí encontrarás todas tus horas y podrás gestionarlas</p>
+                        <p><a class="btn but-go mt-3" href="{% url 'A20_Hrs:ver_horas_paciente' %}">Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                    <div class="col-lg-3">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/mis_consultas.jpeg' %}); background-size: cover; background-position: center;">
+
+                        <h2>Ver Mis Consultas</h2>
+                        <p>Aquí podrás ingresar a cada una de tus atenciones médicas para recordar prescripciones y más.</p>
+                        <p><a class="btn but-go mt-2" href="{% url 'A31_Con:consultas' %}" > Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                    <div class="col-lg-3">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/historial_medico.jpeg' %}); background-size: cover; background-position: center;">
+
+                        <h2>Ver Mi Historial</h2>
+                        <p>Este informe es una compilación de todas tus consultas, donde podrás ver tu evolución en el tiempo</p>
+                        <a class="btn but-go" href="{% url 'A31_Con:informe_historico' request.user.id %}">Ver &raquo;</a>
+
+                    </div><!-- /.col-lg-4 -->
+                </div><!-- /.row -->
+            </div><!-- /.container -->
+
+        {% endif %}
+    {% endfor %}
+
+{% endif %}
+
+{% endblock %}

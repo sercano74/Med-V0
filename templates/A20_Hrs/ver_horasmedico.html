@@ -1,0 +1,80 @@
+<!-- filepath: /c:/Users/sergi/OneDrive/Escritorio/ProyectosDjango/Med/templates/A20_Hrs/ver_horas_medico.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid m-4">
+    <h1>Horas Médicas - Dc. {{ medico.user.first_name }} {{ medico.user.last_name }} - {{ fecha }}</h1>
+    <a class="btn btn-secondary" href="{% url 'A20_Hrs:calendario_horasmedicas' %}">Calendario &raquo;</a>
+    <hr><br>
+    <table class="table table-hover table-border m-4" id="example">
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Paciente</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%if horas_medicas %}
+                {% for hora in horas_medicas %}
+                    <tr>
+                        <td>{{ hora.f_hra }}</td>
+                        <td>{{hora.paciente.user.last_name}}, {{hora.paciente.user.first_name }}</td>
+                        <td>
+                            {% if request.user.is_superuser %}
+                                <a href="{% url 'A20_Hrs:editar_hora_medica' hora.id %}" class="btn btn-warning btn-sm">Editar</a>
+                                {% if hora.pagada == False %}
+                                    <a href="{% url 'A20_Hrs:registrar_pago_efectivo' hora.id %}" class="btn btn-success btn-sm"> Pago con Efectivo</a>
+                                    <a href="{% url 'A20_Hrs:registrar_pago_bono' hora.id %}" class="btn btn-info btn-sm"> Pago con Bono</a>
+                                    <a href="{% url 'A20_Hrs:registrar_pago_tarjeta' hora.id %}" class="btn btn-primary btn-sm"> Pago con Tarjeta</a>
+                                {% else %}
+                                    <a class="btn btn-success btn-sm">Pagada</a>
+                                {% endif %}
+                                <a href="" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Habilitado sólo para médicos" >Iniciar Consulta</a>
+                                <a href="{% url 'A20_Hrs:eliminar_hora_medica' hora.id %}" class="btn btn-danger btn-sm">Anular</a>
+                            {% else %}
+                                {% for group in request.user.groups.all %}
+                                    {% if group.name == "Jefes de Plataforma" %}
+                                        <a href="{% url 'A20_Hrs:editar_hora_medica' hora.id %}" class="btn btn-warning btn-sm">Editar</a>
+                                        {% if hora.pagada == False %}
+                                            <a href="{% url 'A20_Hrs:registrar_pago_efectivo' hora.id %}" class="btn btn-success btn-sm"> Pago con Efectivo</a>
+                                            <a href="{% url 'A20_Hrs:registrar_pago_bono' hora.id %}" class="btn btn-info btn-sm"> Pago con Bono</a>
+                                            <a href="{% url 'A20_Hrs:registrar_pago_tarjeta' hora.id %}" class="btn btn-primary btn-sm"> Pago con Tarjeta</a>
+                                        {% else %}
+                                            <a class="btn btn-success btn-sm">Pagada</a>
+                                        {% endif %}
+                                        <a href="" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Habilitado sólo para médicos" >Iniciar Consulta</a>
+                                        <a href="{% url 'A20_Hrs:eliminar_hora_medica' hora.id %}" class="btn btn-danger btn-sm">Anular</a>
+                                    {% elif group.name == "Recepcionistas" %}
+                                        <a href="{% url 'A20_Hrs:editar_hora_medica' hora.id %}" class="btn btn-warning btn-sm">Editar</a>
+                                        {% if hora.pagada == False %}
+                                            <a href="{% url 'A20_Hrs:registrar_pago_efectivo' hora.id %}" class="btn btn-success btn-sm"> Pago con Efectivo</a>
+                                            <a href="{% url 'A20_Hrs:registrar_pago_bono' hora.id %}" class="btn btn-info btn-sm"> Pago con Bono</a>
+                                            <a href="{% url 'A20_Hrs:registrar_pago_tarjeta' hora.id %}" class="btn btn-primary btn-sm"> Pago con Tarjeta</a>
+                                        {% else %}
+                                            <a class="btn btn-success btn-sm">Pagada</a>
+                                        {% endif %}
+                                        <a href="" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Habilitado sólo para médicos" >Iniciar Consulta</a>
+                                        <a href="{% url 'A20_Hrs:eliminar_hora_medica' hora.id %}" class="btn btn-danger btn-sm">Anular</a>
+                                    {% elif group.name == "Medicos"  %}
+                                        <a {%if hora.estado == 'pagada' %} href="{% url 'A30_Fic:iniciar_ficha_medica' hora.paciente.user.id %}" class="btn btn-success btn-sm"
+                                        {% else %} href="" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Esta hora no está pagada!!"
+                                        {% endif %}>Iniciar Consulta</a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2">No hay horas tomadas por ahora!!</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Listado de Consultas Médicas</h1>
+
+<div class="d-flex justify-content-center">
+    <div id="spinner" class="spinner-border text-danger" role="status" style="display: none;">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<div id="contenido_principal"></div>  </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $("#spinner").show();
+
+        $.ajax({
+            url: '/consultas/consultas_ajax/',
+            type: 'GET',
+            success: function(data) {
+                $("#spinner").hide();
+                $("#contenido_principal").html(data.html);
+
+                // Inicializar DataTables después de cargar el contenido
+                $('#example').DataTable({
+                    "language": {
+                        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                    },
+                    // Opciones adicionales de DataTables si las necesitas
+                    // Por ejemplo:
+                    // "paging": false, // Deshabilitar la paginación
+                    // "searching": false, // Deshabilitar la búsqueda
+                    // "info": false, // Deshabilitar la información de "Mostrando X de Y entradas"
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error AJAX:", status, error);
+                $("#spinner").hide();
+                $("#contenido_principal").html("<p>Error al cargar los datos.</p>");
+            }
+        });
+    });
+</script>
+
+{% endblock %}

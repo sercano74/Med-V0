@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Hola {{ user }},</h1>
+<br>
+<p>Gracias por registrarte en HumanaSalud!!
+<br>
+Por favor, haz clic en el siguiente enlace para activar tu cuenta:</p>
+<br>
+<br>
+<a href="{{ verification_url }}">Activar mi cuenta</a>
+
+{% endblock%}

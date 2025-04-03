@@ -1,0 +1,118 @@
+<!-- filepath: /c:/Users/sergi/OneDrive/Escritorio/ProyectosDjango/Med/templates/A20_Hrs/calendario_horas_medicas.html -->
+{% extends 'base.html' %}
+
+{% comment %} {% load l10n %} {% endcomment %}
+
+{% block content %}
+<div class="flex-container m-4">
+    <h1>Calendario de Horas Médicas - {{ month_name|capfirst }}/{{ year }}</h1>
+    <hr>
+
+    <div class="row">
+        <aside class="col-md-2">
+            <h2>Filtros</h2>
+            <form method="get" class="mb-3">
+                <div class="form-group">
+                    <label for="dia">Filtrar por Día:</label>
+                    <input type="date" name="dia" id="dia" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-secondary">Filtrar</button>
+            </form>
+            <hr>
+        </aside>
+
+        <div class="col-md-10">
+            <div class="d-flex justify-content-between mb-3">
+                <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-secondary">Mes Anterior</a>
+                <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-secondary">Mes Siguiente</a>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="color:blue; width:14.28%">Lunes</th>
+                        <th style="color:blue; width:14.28%">Martes</th>
+                        <th style="color:blue; width:14.28%">Miércoles</th>
+                        <th style="color:blue; width:14.28%">Jueves</th>
+                        <th style="color:blue; width:14.28%">Viernes</th>
+                        <th style="color:blue; width:14.28%">Sábado</th>
+                        <th style="color:blue; width:14.28%">Domingo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for semana in semanas %}
+                        <tr style="width: 14.28%;min-height:150px; word-wrap: break-word;">
+                            {% for dia_tuple in semana %}  {# Iteramos sobre los días de la semana #}
+                                <td style="width: 14.28%;min-height:150px; word-wrap: break-word;">  {# 100% / 7 días = 14.28% #}
+
+                                    {% if dia_tuple.0 %}
+                                        {% comment %} {% if dia_tuple.0.date|date == now|date %}  {# Comparamos objetos date #} {% endcomment %}
+                                        {% if dia_tuple.0.date == now.date %}  {# Comparamos objetos date #}
+                                            <div style="bg:red;">
+                                                <h5><span class="badge rounded-pill bg-danger text-white">{{ dia_tuple.0.date|date:"j" }}</span></h5>
+                                            </div>
+                                        {% else %}
+                                            <div style="color:blue;">
+                                                <p>{{ dia_tuple.0.date|date:"j" }}</p>
+                                            </div>
+                                        {% endif %}
+
+                                        {% for hora in dia_tuple.1 %}
+                                            {% if hora.medico.user.id %}
+                                                {% if hora.estado == 'libre' %}
+                                                    <div class="alert alert-success">
+                                                        {% comment %} <a href="{% url 'A20_Hrs:ver_horasmedico' hora.medico.user.id hora.f_hra|date:'Y-m-d_H:i' %}">
+                                                            {{ hora.paciente.user.first_name }} {{ hora.paciente.user.last_name }} - {{ hora.f_hra|date:"H:i" }}
+                                                        </a> {% endcomment %}
+
+                                                        Hora Médica Libre - {{ hora.f_hra|date:"H:i" }}
+
+                                                    </div>
+
+                                                {% elif hora.estado == 'tomada' %}
+                                                    <div class="alert alert-warning">
+                                                        <a href="{% url 'A20_Hrs:ver_horasmedico' hora.medico.user.id hora.f_hra|date:'Y-m-d_H:i' %}">
+                                                            {{ hora.paciente.user.first_name }} {{ hora.paciente.user.last_name }} - {{ hora.f_hra|date:"H:i" }}
+                                                        </a>
+                                                    </div>
+
+                                                {% elif hora.pagada == True and hora.estado != 'iniciada' and hora.f_hra.date == now.date %}
+                                                    <div class="alert alert-info">
+                                                        {{ hora.paciente.user.first_name }} {{ hora.paciente.user.last_name }} - {{ hora.f_hra|date:"H:i" }}
+                                                        <a href="{% url 'A31_Con:consulta_iniciar' hora.id %}" class="btn btn-success btn-sm">
+                                                            Iniciar Consulta
+                                                        </a>
+                                                    </div>
+
+                                                {% elif hora.estado == 'iniciada' %}
+                                                    <div class="alert alert-info">
+                                                        {% if hora.hora_medica_consultas.first %}
+                                                            {{ hora.paciente.user.first_name }} {{ hora.paciente.user.last_name }} - {{ hora.f_hra|date:"H:i" }}
+                                                            <a href="{% url 'A31_Con:consulta_detalle' hora.hora_medica_consultas.first.id %}"class="btn btn-info btn-sm"> Ver consulta </a>
+                                                    </div>
+                                                    {% else %}
+                                                        <div class="alert alert-info">
+                                                            <p>Consulta no encontrada!!!</p>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endif %}
+                                                        {% comment %} <a href="" class="btn btn-warning btn-sm">Agendar Próxima Consulta</a> {% endcomment %}
+
+
+                                            {% else %}
+                                                <p>Medico no asignado</p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            {% for _ in empty_cells %}
+                                <td></td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

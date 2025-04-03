@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ medicamento.nombre_gen }}</h2>
+<p><strong>Nombre Comercial:</strong> {{ medicamento.nombre_com }}</p>
+<p><strong>Laboratorio:</strong> {{ medicamento.laboratorio }}</p>
+<p><strong>Forma Farmacéutica:</strong> {{ medicamento.forma_farma }}</p>
+<p><strong>Presentación:</strong> {{ medicamento.presentacion }}</p>
+<p><strong>Descripción:</strong> {{ medicamento.descripcion }}</p>
+{% if medicamento.archivo %}
+    <p><strong>Ficha Técnica:</strong> <a href="{{ medicamento.archivo.url }}" target="_blank">Descargar</a></p>
+{% endif %}
+<a href="{% url 'A10_Usu:medicamentoEditar' medicamento.id %}" class="btn btn-warning">Editar</a>
+{% endblock %}

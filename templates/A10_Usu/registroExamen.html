@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="card m-4">
+    <div class="card-header"><h3><strong>Registro de Examenes</strong></h3></div>
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-9">
+                <h5 class="card-title">Lista de Exámenes Médicos</h5>
+                <table class="table table-alert-primary table-hover" id="example">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if examenes %}
+                            {% for examen in examenes %}
+                                <tr>
+                                    <td>{{ examen.nombre }}</td>
+                                    <td>{{ examen.descripcion }}</td>
+                                    <td>
+                                        {% comment %} <a href="{% url 'A20_Hrs:editar_hora_medica' hora.id %}" class="btn btn-warning btn-sm">Editar</a> {% endcomment %}
+                                        <a href="" class="btn btn-success btn-sm">Ver &raquo; </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3">No hay registros disponibles!!</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-3">
+                <h5 class="card-title">Agregar un exámen</h5>
+                <form method="POST" action="{% url 'A10_Usu:registroExamen' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </form>
+            </div>
+
+        </div>
+        <a href="{% url 'A10_Usu:vista_parametros' %}" class="btn btn-primary">Volver</a>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,551 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="card" style="max-width: 100rem;">
+    <div class="card-header">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <img src="{% static 'images/pacientes.jpeg' %}" class="img-fluid rounded-start" alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h4 class="card-title">Consulta Médica</h4>
+                    <p class="card-text"><strong>Hora Med.:</strong> {{ hora.id }}</p>
+                    <p class="card-text"><strong>Fecha Programada</strong> {{ hora.f_hra }}</p>
+                    <p class="card-text"><strong>Fecha Realizada</strong> {{ now }}</p>
+                    <p class="card-text"><strong>Paciente:</strong> {{ paciente.user.first_name }} {{ paciente.user.last_name }}</p>
+                    <p class="card-text"><strong>RUT:</strong> {{ paciente.user.dni }}</p>
+                    <p class="card-text"><strong>Médico:</strong> {{ medico.user.first_name }} {{ medico.user.last_name }}</p>
+                    <p class="card-text"><strong>RUT:</strong> {{ medico.user.dni }}</p>
+                    <p class="card-text"><small class="text-body-secondary"><strong>Fecha:</strong> {{ now }}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+
+            <h5 class="card-title">Triage</h5>
+            <div class="row">
+                <div class="col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text">Temperatura (°C)</span>
+                        <input class="form-control" id="temperatura" name="temperatura" value="{{ consulta_data.temperatura }}" required>
+                    </div>
+                </div>
+                <div class="col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text">P. Sistólica (mmHg)</span>
+                        <input class="form-control" id="p_sistolica" name="p_sistolica" value="{{ consulta_data.p_sistolica }}" required>
+                    </div>
+                </div>
+                <div class="col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text">P. Diastólica (mmHg)</span>
+                        <input class="form-control" id="p_diastolica" name="p_diastolica" value="{{ consulta_data.p_diastolica }}" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text">Altura (cm)</span>
+                        <input class="form-control" id="altura" name="altura" value="{{ consulta_data.altura }}" oninput="calcularIMC()" required>
+                    </div>
+                </div>
+                <div class="col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text">Peso (kg)</span>
+                        <input class="form-control" id="peso" name="peso" value="{{ consulta_data.peso }}" oninput="calcularIMC()" required>
+                    </div>
+                </div>
+                <div class="col col-md-4">
+                    <div class="input-group m-3">
+                        <span class="input-group-text">IMC</span>
+                        <input class="form-control" id="imc" name="imc"  value="{{ consulta_data.imc }}" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group m-2">
+                <span class="input-group-text">Notas</span>
+                <textarea class="form-control" id="notas" name="notas" rows=5 required>{{ consulta_data.notas }}</textarea>
+            </div>
+<hr>
+            <h5 class="card-title">Evaluación Médica</h5>
+            <div class="input-group m-2">
+                <span class="input-group-text">Síntomas</span>
+                <textarea class="form-control" id="sintomas" name="sintomas" rows=5 required>{{ consulta_data.sintomas }}</textarea>
+            </div>
+            <div class="input-group m-2">
+                <span class="input-group-text">Diagnóstico</span>
+                <textarea class="form-control" id="diagnostico" name="diagnostico" rows=5 required>{{ consulta_data.diagnostico }}</textarea>
+            </div>
+            <div class="input-group m-2">
+                <span class="input-group-text">Observaciones</span>
+                <textarea class="form-control" id="observaciones" name="observaciones" rows=5 required>{{ consulta_data.observaciones }}</textarea>
+            </div>
+
+        <hr>
+
+            <h5 class="card-title">Prescripción</h5>
+
+            <!-- Modal de seleccion de medicamentos-->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#medicamentosModal">
+                Seleccionar Medicamentos
+            </button>
+
+            <div class="modal fade" id="medicamentosModal" tabindex="-1" aria-labelledby="medicamentosModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="medicamentosModalLabel">Seleccionar Medicamentos</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table class="table table-hover table-striped" id="medicamentosTable" style="width:100%" id="example">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre Genérico</th>
+                                        <th>Nombre Comercial</th>
+                                        <th>Laboratorio</th>
+                                        <th>Presentación</th>
+                                        <th>Ficha Técnica</th>
+                                        <th>Sel.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for medicamento in medicamentos %}
+                                        <tr>
+                                            <td>{{ medicamento.nombre_gen }}</td>
+                                            <td>{{ medicamento.nombre_com }}</td>
+                                            <td>{{ medicamento.laboratorio }}</td>
+                                            <td>{{ medicamento.presentacion }}</td>
+                                            <td>
+                                                {% if medicamento.archivo %}
+                                                    <a href="{{ medicamento.archivo.url }}" target="_blank">Ver Ficha</a>
+                                                {% else %}
+                                                    Sin ficha
+                                                {% endif %}
+                                            </td>
+                                            <td><button type="button" onclick="seleccionarMedicamento({{ medicamento.id }})" class="btn btn-primary btn-sm">Seleccionar</button></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <br>
+                <label for="medicamentosSeleccionados"><h6>Medicamentos Seleccionados:</h6></label>
+                <table id="medicamentosSeleccionadosTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre Genérico</th>
+                            <th>Nombre Comercial</th>
+                            <th>Vía</th>
+                            <th>Dosis</th>
+                            <th>Frecuencia</th>
+                            <th>Duración</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for medicamento in medicamentos_seleccionados %}
+                        <tr>
+                            <td>{{ medicamento.nombre_gen }}</td>
+                            <td>{{ medicamento.nombre_com }}</td>
+                            <td><input type="text" name="via_{{ medicamento.id }}" class="form-control"></td>
+                            <td><input type="text" name="dosis_{{ medicamento.id }}" class="form-control"></td>
+                            <td><input type="text" name="frecuencia_{{medicamento.id}}" class="form-control"></td>
+                            <td><input type="text" name="duracion_{{medicamento.id}}" class="form-control"></td>
+                            <td><button type="button" onclick="deseleccionarMedicamento({{ medicamento.id }})" class="btn btn-danger btn-sm">Deseleccionar</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+<hr>
+
+            <!--  SECCION ORDENES DE EXAMEN  -->
+            <div class="form-check">
+                {% if request.GET.q_exams %}
+                    <a href="{% url 'A31_Con:consulta_iniciar' hora_id=hora_id %}{% if request.GET.q_licencia %}?q_licencia=true{% endif %}">No Solicitar Exámenes</a>
+                    <input type="hidden" name="exams_activa" value="true">
+                {% else %}
+                    <a href="{% url 'A31_Con:consulta_iniciar' hora_id=hora_id %}?q_exams=true{% if request.GET.q_licencia %}&q_licencia=true{% endif %}">Solicitar Exámenes</a>
+                    <input type="hidden" name="exams_activa" value="false">
+                {% endif %}
+            </div>
+            {% if request.GET.q_exams %}
+                <div id="exams_section">
+                    <h5 class="card-title">Orden de Exámenes</h5>
+
+                <div class="mb-3">
+                    <label class="form-label">Seleccione los exámenes:</label>
+                    {% for examen in examenes %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="examenes" value="{{ examen.id }}" id="examen{{ examen.id }}">
+                        <label class="form-check-label" for="examen{{ examen.id }}">
+                            {{ examen.nombre }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="input-group m-2">
+                    <span class="input-group-text" for="observaciones">Observaciones</span>
+                    <textarea class="form-control" id="observaciones" name="observaciones" rows=5 required></textarea>
+                </div>
+            {% endif %}
+
+<hr>
+            <!--  SECCION LICENCIA MEDICA  -->
+            <div class="form-check">
+                {% if request.GET.q_licencia %}
+                    <a href="{% url 'A31_Con:consulta_iniciar' hora_id=hora_id %}{% if request.GET.q_exams %}?q_exams=true{% endif %}">No Emitir Licencia Médica</a>
+                    <input type="hidden" name="licencia_activa" value="true">
+                {% else %}
+                    <a href="{% url 'A31_Con:consulta_iniciar' hora_id=hora_id %}?q_licencia=true{% if request.GET.q_exams %}&q_exams=true{% endif %}">Emitir Licencia Médica</a>
+                    <input type="hidden" name="licencia_activa" value="false">
+                {% endif %}
+            </div>
+            {% if request.GET.q_licencia %}
+                <div id="licencia_section">
+                    <h5 class="card-title">Licencia</h5>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="lugar_emision">Lugar de Emisión:</label>
+                            <input type="text" id="lugar_emision" name="lugar_emision" class="form-control" {% if request.GET.q_licencia %}required{% endif %} >
+                        </div>
+                        <div class="form-group">
+                            <label for="dirigido_a">Dirigido a:</label>
+                            <input type="text" id="dirigido_a" name="dirigido_a" class="form-control" {% if request.GET.q_licencia %}required{% endif %} >
+                        </div>
+                        <div class="form-group">
+                            <label for="email_empleador">Email empleador:</label>
+                            <input type="text" id="email_empleador" name="email_empleador" class="form-control" {% if request.GET.q_licencia %}required{% endif %} >
+                        </div>
+                        <div class="form-group">
+                            <label for="antecedentes">Antecedentes:</label>
+                            <textarea id="antecedentes" name="antecedentes" class="form-control" {% if request.GET.q_licencia %}required{% endif %} ></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="diagnosis">Diagnóstico y Recomendaciones:</label>
+                            <textarea id="diagnosis" name="diagnosis" class="form-control" value={{ consulta.diagnostico }} {% if request.GET.q_licencia %}required{% endif %} ></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="inicio">Inicio:</label>
+                            <input type="date" id="inicio" name="inicio" class="form-control" {% if request.GET.q_licencia %}required{% endif %} >
+                        </div>
+                        <div class="form-group">
+                            <label for="termino">Término:</label>
+                            <input type="date" id="termino" name="termino" class="form-control" {% if request.GET.q_licencia %}required{% endif %} >
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <hr>
+
+            <button class="btn btn-success" type="submit">Grabar Consulta</button>
+        </form>
+
+        <br>
+
+        <a class="btn btn-outline-primary mt-3" href="{% url 'A20_Hrs:calendario_horasmedicas' %}">Volver a Calendario &raquo;</a>
+    </div>
+
+    <div class="card-footer text-body-secondary">
+        HumanaSalud - 2025
+    </div>
+</div>
+
+
+<script>
+    function calcularIMC() {
+        const altura = parseFloat(document.getElementById("altura").value) / 100;
+        const peso = parseFloat(document.getElementById("peso").value);
+        const imcField = document.getElementById("imc");
+        const sistolica = parseInt(document.getElementById("p_sistolica").value);
+        const diastolica = parseInt(document.getElementById("p_diastolica").value);
+        const notasField = document.getElementById("notas");
+
+        notasField.value = notasField.value.replace(/Recomendaciones IMC:.*$/ms, '');
+        notasField.value = notasField.value.replace(/Recomendaciones Presión Arterial:.*$/ms, '');
+
+        if (altura && peso && sistolica && diastolica) {
+            const imc = peso / (altura * altura);
+            imcField.value = imc.toFixed(2);
+
+            let recomendacionesIMC = "Recomendaciones IMC:\n";
+            if (imc < 18.5) {
+                recomendacionesIMC += "- Peso bajo. Consulte a un nutricionista.\n";
+            } else if (imc < 25) {
+                recomendacionesIMC += "- Peso normal. ¡Felicitaciones, siga manteniendo un estilo de vida saludable!\n";
+            } else if (imc < 30) {
+                recomendacionesIMC += "- Sobrepeso. Considere aumentar la actividad física y mejorar su alimentación.\n";
+            } else {
+                recomendacionesIMC += "- Obesidad. Consulte a un médico y a un nutricionista.\n";
+            }
+            notasField.value += recomendacionesIMC;
+        } else {
+            imcField.value = "";
+        }
+
+        if (sistolica && diastolica) {
+            let recomendacionesPA = "Recomendaciones Presión Arterial:\n";
+            if (sistolica < 120 && diastolica < 80) {
+                recomendacionesPA += "- Presión arterial normal. ¡Felicitaciones, siga manteniendo un estilo de vida saludable!\n";
+            } else if (sistolica < 130 && diastolica < 85) {
+                recomendacionesPA += "- Presión arterial normal-alta. Considere adoptar hábitos de vida más saludables.\n";
+            } else if (sistolica < 140 && diastolica < 90) {
+                recomendacionesPA += "- Hipertensión grado 1. Consulte a su médico para un diagnóstico y plan de tratamiento.\n";
+            } else if (sistolica < 160 && diastolica < 100) {
+                recomendacionesPA += "- Hipertensión grado 2. Consulte a su médico para un diagnóstico y plan de tratamiento.\n";
+            } else if (sistolica >= 160 || diastolica >= 100) {
+                recomendacionesPA += "- Hipertensión grado 3. Consulte a su médico de inmediato!!\n";
+            }
+
+            notasField.value += recomendacionesPA;
+        }
+    }
+
+    document.getElementById("altura").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            calcularIMC();
+        }
+    });
+
+    document.getElementById("peso").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            calcularIMC();
+        }
+    });
+
+    document.getElementById("p_sistolica").addEventListener("input", calcularIMC);
+
+    document.getElementById("p_diastolica").addEventListener("input", calcularIMC);
+
+    // calcularIMC() al cargar la página para mostrar recomendaciones iniciales (opcional)
+    window.addEventListener('DOMContentLoaded', calcularIMC);
+
+
+
+    // Ocultar el botón inicialmente
+    document.getElementById("btnImprimir").style.display = "none";
+
+    // Mostrar el botón después de que se haya enviado el formulario
+    document.querySelector("form").addEventListener("submit", function(event) {
+        document.getElementById("btnImprimir").style.display = "block";
+    });
+
+    document.querySelector("form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Evitar que se recargue la página
+
+        $.ajax({
+            type: "POST",
+            url: "/consulta_iniciar/{{ hora.id }}/", // URL del formulario
+            data: $(this).serialize(), // Datos del formulario
+            success: function(response) {
+                // Mostrar el botón de impresión
+                document.getElementById("btnImprimir").style.display = "block";
+            },
+            error: function(error) {
+                console.error("Error al guardar la consulta:", error);
+            }
+        });
+    });
+
+
+    function imprimirOrdenExamen(consultaId) {
+        if (consultaId) { // Verifica que consultaId no sea undefined
+            window.open(`/imprimir_orden_examen/${consultaId}/`, '_blank');
+        } else {
+            console.error("ID de consulta no definido.");
+            alert("No se puede imprimir la orden. La consulta no ha sido creada."); // Alerta al usuario
+        }
+    }
+
+
+
+    // Inicializar DataTable para selección demedicamentos.
+    $(document).ready(function () {
+        $('#medicamentosTable').DataTable();
+    });
+
+    function seleccionarMedicamento(medicamentoId) {
+        $.ajax({
+            url: `?seleccionar_medicamento=${medicamentoId}`,
+            type: 'GET',
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            success: function(response) {
+                if (response.status === 'ok') {
+                    actualizarMedicamentosSeleccionados();
+                }
+            }
+        });
+    }
+
+    function deseleccionarMedicamento(medicamentoId) {
+        $.ajax({
+            url: `?deseleccionar_medicamento=${medicamentoId}`,
+            type: 'GET',
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+            success: function(response) {
+                if (response.status === 'ok') {
+                    actualizarMedicamentosSeleccionados();
+                }
+            }
+        });
+    }
+
+    function actualizarMedicamentosSeleccionados() {
+        $.ajax({
+            url: '/consultas/obtener_medicamentos_seleccionados/', // Nueva URL para obtener los medicamentos seleccionados
+            type: 'GET',
+            success: function(data) {
+                const tabla = $('#medicamentosSeleccionadosTable tbody');
+                tabla.empty(); // Limpiar la tabla
+
+                data.medicamentos.forEach(medicamento => {
+                    tabla.append(`
+                        <tr>
+                            <td>${medicamento.nombre_gen}</td>
+                            <td>${medicamento.nombre_com}</td>
+                            <td><input type="text" name="via_${medicamento.id}" class="form-control"></td>
+                            <td><input type="text" name="dosis_${medicamento.id}" class="form-control"></td>
+                            <td><input type="text" name="frecuencia_${medicamento.id}" class="form-control"></td>
+                            <td><input type="text" name="duracion_${medicamento.id}" class="form-control"></td>
+                            <td><button type="button" onclick="deseleccionarMedicamento(${medicamento.id})" class="btn btn-danger btn-sm">Deseleccionar</button></td>
+                        </tr>
+                    `);
+                });
+            }
+        });
+    }
+
+    // Actualizar la lista de medicamentos seleccionados al cargar la página
+    $(document).ready(function() {
+        actualizarMedicamentosSeleccionados();
+    });
+
+
+</script>
+
+
+{% endblock %}
+
+//Esquema de prescripción que funciona
+<h5 class="card-title">Prescripción</h5>
+            <div class="mb-3">
+                <h6>Selección de Medicamentos</h6>
+                <table class="table table-hover table-striped" id="example"  style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre Genérico</th>
+                            <th>Nombre Comercial</th>
+                            <th>Laboratorio</th>
+                            <th>Presentación</th>
+                            <th>Ficha Técnica</th>
+                            <th>Sel.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for medicamento in medicamentos %}
+                        <tr>
+                            <td>{{ medicamento.nombre_gen }}</td>
+                            <td>{{ medicamento.nombre_com }}</td>
+                            <td>{{ medicamento.laboratorio }}</td>
+                            <td>{{ medicamento.presentacion }}</td>
+                            <td>
+                                {% if medicamento.archivo %}
+                                <a href="{{ medicamento.archivo.url }}" target="_blank">Ver Ficha</a>
+                                {% else %}
+                                Sin ficha
+                                {% endif %}
+                            </td>
+                            <td><button type="button" onclick="seleccionarMedicamento({{ medicamento.id }})" class="btn btn-primary btn-sm">Seleccionar</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group">
+                <label for="medicamentosSeleccionados">Medicamentos Seleccionados:</label>
+                <table id="medicamentosSeleccionadosTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre Genérico</th>
+                            <th>Nombre Comercial</th>
+                            <th>Vía</th>
+                            <th>Dosis</th>
+                            <th>Frecuencia</th>
+                            <th>Duración</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for medicamento in medicamentos_seleccionados %}
+                        <tr>
+                            <td>{{ medicamento.nombre_gen }}</td>
+                            <td>{{ medicamento.nombre_com }}</td>
+                            <td><input type="text" name="via_{{ medicamento.id }}" class="form-control"></td>
+                            <td><input type="text" name="dosis_{{ medicamento.id }}" class="form-control"></td>
+                            <td><input type="text" name="frecuencia_{{medicamento.id}}" class="form-control"></td>
+                            <td><input type="text" name="duracion_{{medicamento.id}}" class="form-control"></td>
+                            <td><button type="button" onclick="deseleccionarMedicamento({{ medicamento.id }})" class="btn btn-danger btn-sm">Deseleccionar</button></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+
+
+
+//codigo JS para seleccionar y gestionar los medicamentos
+
+function seleccionarMedicamento(medicamentoId) {
+    $.ajax({
+        url: `?seleccionar_medicamento=${medicamentoId}`,
+        type: 'GET',
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+        success: function(response) {
+            if (response.status === 'ok') {
+                actualizarMedicamentosSeleccionados();
+            }
+        }
+    });
+}
+
+function deseleccionarMedicamento(medicamentoId) {
+    $.ajax({
+        url: `?deseleccionar_medicamento=${medicamentoId}`,
+        type: 'GET',
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+        success: function(response) {
+            if (response.status === 'ok') {
+                actualizarMedicamentosSeleccionados();
+            }
+        }
+    });
+}
+
+

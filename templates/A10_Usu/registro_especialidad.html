@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Registro de Especialidades Médicas</h2>
+
+{% if especialidades %}
+<ul>
+    {% for especialidad in especialidades %}
+    <li>{{ especialidad.name }} </li>
+    {% endfor %}
+</ul>
+{% else %}
+    <p>Aún no se han ingresado especialidades de salud </p>
+{% endif %}
+
+<hr>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</form>
+{% endblock %}

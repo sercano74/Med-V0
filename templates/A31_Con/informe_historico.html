@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Historial Médico de {{ paciente.user.get_full_name }}</h1>
+<hr>
+<h2>Datos y Predicciones</h2>
+<div id="contenedorGrafico" style="width: 100%; height: 50%vw;">
+    <img src="data:image/png;base64,{{ grafico_presiones }}" alt="Gráfico de presiones">
+</div>
+<p><strong>{{ comentarios }}</strong></p>
+
+<h2>Últimos Diagnósticos</h2>
+<ul>
+    {% for consulta in ultimos_diagnosticos %}
+        <li>Consulta N° {{consulta.id}}-[{{ consulta.hora_medica.f_hra }}]: {{ consulta.diagnostico }}</li>
+    {% endfor %}
+</ul>
+
+<h2>Exámenes Pendientes</h2>
+{% if examenes_pendientes %}
+    <ol>
+        {% for examen in examenes_pendientes %}
+            {% if examen.estado != 'perdida' %}<li>Orden de Examen N°: {{examen.consulta.id}}-{{ examen.examen.nombre }}</li>{% endif %}
+        {% endfor %}
+    </ol>
+{% else %}
+    <p>No hay exámenes pendientes.</p>
+{% endif %}
+
+
+
+
+{% endblock %}

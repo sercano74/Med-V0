@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row m-4">
+    <div class="col col-6"><h2>Informe Diario de Horas Médicas - {{ fecha_actual }}</h2></div>
+    <div class="col col-sm-2"><a href="?pdf" class="btn btn-primary" target="_blank" >Descargar PDF</a></div>
+</div>
+
+<h3 class="m-2">Detalle Diario:</h3>
+<table class="table table-secondary table-hover m-3">
+    <thead>
+        <tr>
+            <th>Médico</th>
+            <th>Hora Médica</th>
+            <th>Paciente</th>
+            <th>Tipo de Pago</th>
+            <th>Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pago in pagos_del_dia %}
+            <tr>
+                <td>{{ pago.hora_medica.medico.user.first_name }} {{ pago.hora_medica.medico.user.last_name }}</td>
+                <td>{{ pago.hora_medica.f_hra }}</td>
+                <td>{{ pago.hora_medica.paciente.user.first_name }} {{ pago.hora_medica.paciente.user.last_name }}</td>
+                <td>{{ pago.tipo_pago }}</td>
+                <td>{{ pago.monto }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Subtotales por Médico:</h3>
+<table class="table table-secondary table-hover m-3">
+    <thead>
+        <tr>
+            <th>Médico</th>
+            <th>Efectivo</th>
+            <th>Bono</th>
+            <th>Tarjeta</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for medico, subtotales in subtotales_medico.items %}
+            <tr>
+                <td>{{ medico.user.first_name }} {{ medico.user.last_name }}</td>
+                <td>{{ subtotales.efectivo }}</td>
+                <td>{{ subtotales.bono }}</td>
+                <td>{{ subtotales.tarjeta }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Subtotales por Tipo de Pago:</h3>
+<table class="table table-secondary table-hover m-3">
+    <thead>
+        <tr>
+            <th>Tipo de Pago</th>
+            <th>Monto</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tipo_pago, monto in subtotales_tipo_pago.items %}
+            <tr>
+                <td>{{ tipo_pago }}</td>
+                <td>{{ monto }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Total Diario: {{ total_diario }}</h3>
+
+{% endblock %}

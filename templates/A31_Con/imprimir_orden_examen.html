@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Orden de Exámenes</title>
+</head>
+<body>
+    <h1>Orden de Exámenes</h1>
+
+    <p><strong>Paciente:</strong> {{ consulta.hora_medica.paciente.user.first_name }} {{ consulta.hora_medica.paciente.user.last_name }}</p>
+    <p><strong>Médico:</strong> {{ consulta.hora_medica.medico.user.first_name }} {{ consulta.hora_medica.medico.user.last_name }}</p>
+    <p><strong>Fecha:</strong> {{ consulta.hora_medica.f_hra }}</p>
+
+    <h2>Exámenes Solicitados</h2>
+    <ul>
+        {% for examen in consulta.consulta_examenes.all %}
+        <li>{{ examen.examen.nombre }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Observaciones</h2>
+    <p>{{ consulta.observaciones }}</p>
+
+    <p>Firma del Médico:</p>
+</body>
+</html>

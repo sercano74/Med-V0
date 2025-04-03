@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+    {% comment %} <div class="container container-fluid m-4"> {% endcomment %}
+<br>
+        {% for group in request.user.groups.all %}   <!-- Devuelve un query con los grupos a los que pert el Jefe de Plataforma-->
+            {% if group.name == "Jefes de Plataforma" %}
+
+            <div class="container-sm-fluid m-3" style="background-color:rgb(174, 247, 247);">
+                <!-- Three columns of text below the carousel -->
+                <div class="row justify-content-center">
+                    <div class="col col-lg-3 text-center m-2">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/parametros.jpeg' %}); background-size: cover; background-position: center;">
+                            <title>Placeholder</title></svg>
+                        <h2>Sistemas de Salud</h2>
+                        <p>Aquí podrás gestionar todos los planes de salud privada y estatales</p>
+                        <p><a class="btn but-go" href="{% url 'A10_Usu:registro_sistema_salud' %}">Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+
+                    <div class="col col-lg-3 text-center m-2">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/pacientes.jpeg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                        <h2>Géneros</h2>
+                        <p>Crear y modificar nombre de géneros humanos. </p>
+                        <p><a class="btn but-go" href="{% url 'A10_Usu:registro_genero' %}">Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+                </div><!-- /.row -->
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-3 text-center m-2">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/especialidades.jpg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+                        <h2>Especialidades</h2>
+                        <p>Aquí podrás ingresar a cada una de tus atenciones médicas para recordar prescripciones y más.</p>
+                        <p><a class="btn but-go" href="{% url 'A10_Usu:registro_especialidad' %}">Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                    <div class="col-lg-3  text-center m-2">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/examenes.jpg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+
+                        <h2>Examenes</h2>
+                        <p>Aquí puedes agregar los diversos tipos de exámenes que serán ordenados a los pacientes para así ser más certero en el diagnóstico y medicación.</p>
+                        <p><a class="btn but-go" href="{% url 'A10_Usu:registroExamen' %}">Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                    <div class="col-lg-3  text-center m-2">
+                        <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false" style="background-image: url({% static 'images/medicamentos.jpg' %}); background-size: cover; background-position: center;"><title>Placeholder</title></svg>
+
+                        <h2>Medicamentos</h2>
+                        <p>Aquí puedes ingresar los diversos medicamentos validados por el SNS que pueden ser prescritos en el país. Esto facilitará la confección de tu prescripción médica.</p>
+                        <p><a class="btn but-go" href="{% url 'A10_Usu:registroMedicamento' %}">Ver &raquo;</a></p>
+                    </div><!-- /.col-lg-4 -->
+
+                </div><!-- /.row -->
+            </div><!-- /.container -->
+            {% endif %}
+        {% endfor %}
+
+
+    {% comment %} </div> {% endcomment %}
+
+{% endblock %}

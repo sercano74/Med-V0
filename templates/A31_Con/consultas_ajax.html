@@ -1,0 +1,48 @@
+<table id="example" class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha/Hora</th>
+            <th>Médico</th>
+            <th>Paciente</th>
+            {% comment %} <th>Temp.</th>
+            <th>P. Sist.</th>
+            <th>P. Diast.</th>
+            <th>Altura</th>
+            <th>Peso</th>
+            <th>IMC</th> {% endcomment %}
+            {% comment %} <th>Síntomas</th>
+            <th>Diagnóstico</th> {% endcomment %}
+            <th>Estado</th>
+            <th>Acciones</th> </tr>
+    </thead>
+    <tbody>
+        {% for consulta in consultas %}
+        <tr>
+            <td>{{ consulta.id }}</td>
+            <td>{{ consulta.hora_medica.f_hra }}</td>
+            <td>{{ consulta.hora_medica.medico.user.first_name }} {{ consulta.hora_medica.medico.user.last_name }}</td>
+            <td>{% if consulta.hora_medica.paciente %}{{ consulta.hora_medica.paciente.user.first_name }} {{ consulta.hora_medica.paciente.user.last_name }}{% endif %}</td>
+            {% comment %} <td>{{ consulta.temperatura }}</td>
+            <td>{{ consulta.p_sistolica }}</td>
+            <td>{{ consulta.p_diastolica }}</td>
+            <td>{{ consulta.altura }}</td>
+            <td>{{ consulta.peso }}</td>
+            <td>{{ consulta.imc }}</td> {% endcomment %}
+            {% comment %} <td>{{ consulta.sintomas }}</td>
+            <td>{{ consulta.diagnostico }}</td> {% endcomment %}
+            <td>{{ consulta.estado }}</td>
+            <td>
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="{% url 'A31_Con:consulta_detalle' consulta.id %}" class="btn but-go" role="button">Ver Ficha</a>
+                    {% comment %} <a href="" class="btn btn-sm btn-outline-warning">Subir Resultados</a> {% endcomment %}
+                    {% comment %} <a href="{% url 'A31_Con:consulta_editar' consulta.id %}" class="btn btn-sm btn-outline-success">Editar/Cerrar</a> {% endcomment %}
+                    {% if consulta.resultados_enviados %}
+                        <a href="{% url 'A31_Con:consulta_editar' consulta.id %}" class="btn but-add">Editar/Cerrar</a>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

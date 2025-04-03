@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for group in request.user.groups.all %}   <!-- Devuelve un query con los grupos a los que pert el usuario-->
+    {% if group.name == "Medicos" %}
+        {% if pacientes_atendidos %}
+            <ul>
+                {% for paciente in pacientes_atendidos %}
+                    <li>
+                        <a href="{% url 'A30_Fic:historial_medico' paciente.user.id %}">  {# Usa paciente.pk para obtener el ID #}
+                            {{ paciente.user.first_name }} {{ paciente.user.last_name }}  {# Accede a los datos del usuario #}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay pacientes para mostrar.</p>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+
+
+{% endblock %}

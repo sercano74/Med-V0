@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Pacientes con Horas Asignadas</h1>
+{% if horas_medicas %}
+    <ul>
+        {% for hora_medica in horas_medicas %}
+            <li>
+                {{ hora_medica.paciente.user.first_name }} {{ hora_medica.paciente.user.last_name }} -
+                <a href="{% url 'A30_Fic:iniciar_ficha_medica' hora_medica.paciente.user.id %}">Iniciar Ficha Médica</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay pacientes con horas asignadas.</p>
+{% endif %}
+{% endblock %}

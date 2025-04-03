@@ -1,0 +1,75 @@
+<!-- filepath: /c:/Users/sergi/OneDrive/Escritorio/ProyectosDjango/Med/templates/A20_Hrs/solicitar_horapara_desdehora.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Seleccionar Paciente para la Hora Médica</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="hora_medica_id" value="{{ hora_medica.id }}">
+        <div class="form-group">
+            <label for="paciente">Paciente:</label>
+            <select name="paciente_id" id="paciente" class="form-control">
+                {% for paciente in pacientes %}
+                    <option value="{{ paciente.user.id }}">{{ paciente.user.first_name }} {{ paciente.user.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Seleccionar</button>
+    </form>
+</div>
+
+<div class="card-body">
+    {% if pacientes %}
+    <table class="table table-hover table-success table-bordered" style="text-align:center; font-size:15px" id="tabla-pacientes">
+        <thead>
+            <tr>
+                <th style="width:8%">Nombre</th>
+                <th style="width:10%">Apellido</th>
+                <th style="width:15%">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paciente in pacientes %}
+                <tr data-paciente-id="{{ paciente.user.id }}"> {# Agrega un atributo data #}
+                    <td scope="row">{{ paciente.user.first_name }}</td>
+                    <td>{{ paciente.user.last_name }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-seleccionar-paciente">Seleccionar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <form id="formulario-seleccion" method="post" style="display: none;"> {# Formulario oculto #}
+        {% csrf_token %}
+        <input type="hidden" name="hora_medica_id" value="{{ hora_medica.id }}">
+        <input type="hidden" name="paciente_id" id="paciente-id"> {# Campo oculto para el ID del paciente #}
+        <button class="btn btn-outline-success" type="submit">Confirmar Selección</button>
+    </form>
+
+    {% else %}
+        <p>No hay pacientes registrados.</p>
+    {% endif %}
+</div>
+
+
+<script>
+    const tablaPacientes = document.getElementById('tabla-pacientes');
+    const botonesSeleccionar = tablaPacientes.querySelectorAll('.btn-seleccionar-paciente');
+    const formularioSeleccion = document.getElementById('formulario-seleccion');
+    const pacienteIdInput = document.getElementById('paciente-id');
+
+    botonesSeleccionar.forEach(boton => {
+        boton.addEventListener('click', () => {
+            const fila = boton.closest('tr');
+            const pacienteId = fila.dataset.pacienteId;
+
+            pacienteIdInput.value = pacienteId;  // Asigna el ID al campo oculto
+            formularioSeleccion.style.display = 'block'; // Muestra el formulario de confirmación
+        });
+    });
+</script>
+
+{% endblock %}

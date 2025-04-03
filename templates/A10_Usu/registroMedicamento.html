@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class=" m-4">
+    <h2>Registro de Medicamentos</h2>
+    <table class="table table-alert-primary table-hover"  id="example">
+        <thead>
+            <tr>
+                <th scope="col">Nombre Genérico</th>
+                <th scope="col">Nombre Comercial</th>
+                <th scope="col">Laboratorio</th>
+                <th scope="col">Forma Farmacéutica</th>
+                <th scope="col">Presentación</th>
+                <th scope="col">Ficha Técnica</th>
+                <th scope="col">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if medicamentos %}
+                {% for medicamento in medicamentos %}
+                    <tr>
+                        <td>{{ medicamento.nombre_gen }}</td>
+                        <td>{{ medicamento.nombre_com }}</td>
+                        <td>{{ medicamento.laboratorio }}</td>
+                        <td>{{ medicamento.forma_farma }}</td>
+                        <td>{{ medicamento.presentacion }}</td>
+                        <td>
+                            {% if medicamento.archivo %}
+                                <a href="{{ medicamento.archivo.url }}" target="_blank">Ver Ficha &raquo;</a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'A10_Usu:medicamentoVer' medicamento.id %}" class="btn btn-success btn-sm">Ver &raquo; </a>
+                            <a href="{% url 'A10_Usu:medicamentoEditar' medicamento.id %}" class="btn btn-warning btn-sm">Editar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="8">No hay registros disponibles!!</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<hr>
+
+<div class="card">
+    <h5 class="card-header">Registrar un medicamento</h5>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_table }}
+
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+    </div>
+</div>
+
+
+<h2 class="mb-5"></h2>
+
+{% endblock %}

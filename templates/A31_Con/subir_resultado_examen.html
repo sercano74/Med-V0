@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Subir Resultado de Examen</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="archivo">Archivo del Examen:</label>
+    <input type="file" name="archivo" required>
+    <button type="submit">Subir</button>
+</form>
+{% endblock %}

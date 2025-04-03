@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Pago con Bono Isapre</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="numero_bono">Número de Bono:</label>
+    <input type="text" name="numero_bono" id="numero_bono">
+    <button type="submit">Registrar Pago</button>
+</form>
+
+<a href="{% url 'A20_Hrs:listar_horas_medicas' %}">Cancelar</a>  {# Enlace para cancelar #}
+
+{% endblock %}

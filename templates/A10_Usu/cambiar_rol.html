@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Cambiar Rol</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="perfil">Selecciona un rol:</label>
+    <select name="perfil" id="perfil">
+        {% for perfil, nombre in perfiles %}
+            <option value="{{ perfil }}">{{ nombre }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Seleccionar</button>
+</form>
+{% endblock %}

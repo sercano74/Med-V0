@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Mis Horas Médicas</h1>
+
+{% if horas_medicas %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hora_medica in horas_medicas %}
+                <tr>
+                    <td>{{ hora_medica.f_hra|date:"l, d/m/Y H:i" }}</td>
+                    <td>{{ hora_medica.estado }}</td>
+                    <td>
+                        {% if hora_medica.estado == 'tomada' %}
+                            <form method="POST" action=".">
+                                {% csrf_token %}
+                                <input type="hidden" name="hora_medica" value="{{ hora_medica.id }}">
+                                <button type="submit" name="liberar_hora">Liberar Hora</button>
+                            </form>
+                        {% elif hora_medica.estado == 'libre' %}
+                            <form method="POST" action=".">
+                                {% csrf_token %}
+                                <input type="hidden" name="hora_medica" value="{{ hora_medica.id }}">
+                                <button type="submit" name="tomar_hora">Tomar Hora</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No tienes horas médicas.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h1>Sistema de Gestión de Consultas Médicas</h1>
+
+    <nav>
+        <ul>
+            <li><a href="#consultas">Consultas</a></li>
+            <li><a href="#examenes">Exámenes</a></li>
+            <li><a href="#medicamentos">Medicamentos</a></li>
+            <li><a href="#reportes">Reportes</a></li>
+            <li><a href="#pacientes">Pacientes</a></li> </ul>
+    </nav>
+
+    <main>
+        <section id="consultas">
+            <h2>Gestión de Consultas</h2>
+
+            <form id="formulario-consulta">
+                <h3>Nueva Consulta</h3>
+                <input type="number" id="temperatura" placeholder="Temperatura (°C)">
+                <input type="number" id="p_sistolica" placeholder="Presión sistólica (mmHg)">
+                <input type="number" id="p_diastolica" placeholder="Presión diastólica (mmHg)">
+                <input type="number" id="altura" placeholder="Altura (cm)">
+                <input type="number" id="peso" placeholder="Peso (kg)">
+                <span id="imc"></span>
+                <textarea id="sintomas" placeholder="Síntomas"></textarea>
+                <textarea id="diagnostico" placeholder="Diagnóstico"></textarea>
+                <textarea id="notas" placeholder="Notas"></textarea>
+
+                <h3>Exámenes</h3>
+                <div id="examenes-seleccionados">
+                    </div>
+                <button type="button" id="seleccionar-examenes">Seleccionar Exámenes</button>
+
+                <h3>Medicamentos</h3>
+                <div id="medicamentos-prescritos">
+                    </div>
+                <button type="button" id="prescribir-medicamentos">Prescribir Medicamentos</button>
+
+                <h3>Imágenes</h3>
+                <input type="file" id="imagenes" multiple>
+
+                <h3>Certificado Médico</h3>
+                <button type="button" id="generar-certificado">Generar Certificado</button>
+
+                <button type="submit">Guardar Consulta</button>
+            </form>
+
+            <h3>Historial de Consultas</h3>
+            <table id="tabla-historial-consultas">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Diagnóstico</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="examenes">
+            <h2>Gestión de Exámenes</h2>
+
+            <form id="formulario-examen">
+                <h3>Nuevo Examen</h3>
+                <input type="text" id="nombre-examen" placeholder="Nombre del examen">
+                <textarea id="descripcion-examen" placeholder="Descripción del examen"></textarea>
+                <button type="submit">Guardar Examen</button>
+            </form>
+
+            <h3>Listado de Exámenes</h3>
+            <table id="tabla-listado-examenes">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="medicamentos">
+            <h2>Gestión de Medicamentos</h2>
+
+            <form id="formulario-medicamento">
+                <h3>Nuevo Medicamento</h3>
+                <input type="text" id="nombre-generico" placeholder="Nombre genérico">
+                <input type="text" id="nombre-comercial" placeholder="Nombre comercial">
+                <input type="file" id="ficha-tecnica">
+                <button type="submit">Guardar Medicamento</button>
+            </form>
+
+            <h3>Listado de Medicamentos</h3>
+            <table id="tabla-listado-medicamentos">
+                <thead>
+                    <tr>
+                        <th>Nombre genérico</th>
+                        <th>Nombre comercial</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <section id="reportes">
+            <h2>Generación de Reportes</h2>
+            </section>
+
+        <section id="pacientes">
+            <h2>Gestión de Pacientes</h2>
+            </section>
+    </main>
+
+{% endblock %}
+
+{% comment %} Gestión de Exámenes:
+
+Creación, edición y eliminación de exámenes: Permitir al personal médico administrar el catálogo de exámenes (nombre, descripción).
+Listado y búsqueda de exámenes: Mostrar una lista de los exámenes disponibles, con opciones de búsqueda y filtrado.
+Gestión de Medicamentos:
+
+Creación, edición y eliminación de medicamentos: Administrar el catálogo de medicamentos (nombre genérico, nombre comercial, forma farmacéutica, presentación, descripción, ficha técnica).
+Listado y búsqueda de medicamentos: Mostrar una lista de los medicamentos disponibles, con opciones de búsqueda y filtrado por nombre genérico, nombre comercial, etc.
+Carga y visualización de fichas técnicas: Permitir cargar y visualizar las fichas técnicas de los medicamentos (campo archivo).
+Gestión de Consultas:
+
+Registro de consultas: Crear nuevas consultas asociándolas a una hora médica (HoraMedica), registrando los datos del paciente (temperatura, presión, altura, peso, síntomas, diagnóstico, notas).
+Cálculo automático de IMC: Calcular el IMC al ingresar la altura y el peso.
+Asignación de exámenes a consultas: Seleccionar los exámenes requeridos para una consulta específica (usando Consulta_Examen). Podrías tener un flujo donde se "solicitan" los exámenes.
+Prescripción de medicamentos: Asignar medicamentos a una consulta, especificando la vía, dosis, frecuencia y duración del tratamiento (usando Consulta_Receta).
+Registro de imágenes: Asociar imágenes (radiografías, ecografías, etc.) a una consulta, junto con un diagnóstico (usando Consulta_imagen).
+Generación de certificados: Crear certificados médicos para una consulta, especificando la información necesaria (lugar de emisión, dirigido a, antecedentes, diagnóstico, recomendaciones, período de validez, archivo) (usando Consulta_Certificado).
+Visualización del historial de consultas: Mostrar un listado de las consultas de un paciente, con la posibilidad de ver los detalles de cada consulta, incluyendo los exámenes solicitados, los medicamentos prescritos, las imágenes asociadas y los certificados generados.
+Modificación y finalización de consultas: Permitir editar los datos de una consulta y cambiar su estado (No Iniciada, Iniciada, Finalizada).
+Gestión de Resultados de Exámenes:
+
+Registro de resultados: Asociar los resultados a cada examen de una consulta específica (en Consulta_Examen).
+Carga de archivos: Permitir adjuntar archivos con los resultados de los exámenes (campo archivo en Consulta_Examen).
+Cambio de estado de exámenes: Actualizar el estado de los exámenes (Solicitado, Subido, Anulado).
+Gestión de Recetas:
+
+Impresión de recetas: Generar e imprimir las recetas a partir de la información registrada en Consulta_Receta.
+Gestión de Certificados:
+
+Generación de PDFs de certificados: Generar automáticamente PDFs con la información de los certificados médicos.
+Otras funcionalidades:
+
+Búsqueda y filtrado de consultas: Buscar consultas por paciente, médico, fecha, estado, etc.
+Generación de informes: Crear informes con estadísticas sobre las consultas, los exámenes más solicitados, los medicamentos más prescritos, etc.
+Integración con el sistema de horas médicas: Conectar este sistema con el sistema de A20_Hrs para que las consultas se creen a partir de las horas médicas reservadas.
+Interfaz para el paciente: Permitir a los pacientes acceder a su historial de consultas, resultados de exámenes, recetas y certificados. {% endcomment %}

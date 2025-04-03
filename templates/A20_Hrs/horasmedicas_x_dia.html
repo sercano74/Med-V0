@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <h1>Horas Médicas - {{ dia|date:"d-m-Y" }}</h1>
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Médico</th>
+                        <th>Especialidad</th>
+                        <th>Paciente</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hora in horas_medicas %}
+                        <tr>
+                            <td>{{ hora.f_hra|time:"H:i" }}</td>
+                            <td>{{ hora.medico.user.first_name }} {{ hora.medico.user.last_name }}</td>
+                            <td>
+                                {% for especialidad in hora.medico.especialidad.all %}
+                                    {{ especialidad.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if hora.paciente %}
+                                    {{ hora.paciente.user.first_name }} {{ hora.paciente.user.last_name }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if hora.estado == 'libre' %}
+                                    <span class="badge bg-success">Libre</span>
+                                {% elif hora.estado == 'tomada' %}
+                                    <span class="badge bg-warning">Tomada</span>
+                                {% elif hora.estado == 'pagada' %}
+                                    <span class="badge bg-info">Pagada</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Anulada</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if hora.estado == 'libre' %}
+                                    <a href="{% url 'A20_Hrs:asignar_hora' hora.id %}" class="btn btn-sm btn-success">Asignar</a>
+                                {% elif hora.estado == 'tomada' %}
+                                    <a href="{% url 'A20_Hrs:liberar_hora' hora.id %}" class="btn btn-sm btn-warning">Liberar</a>
+                                {% elif hora.estado == 'pagada' %}
+                                    {% comment %} <a href="{% url 'A20_Hrs:ver_pago' hora.id %}" class="btn btn-sm btn-info">Ver Pago</a> {% endcomment %}
+                                    <a href="{% url 'A30_Fic:iniciar_ficha_medica' hora.paciente.user.id %}" class="btn btn-sm btn-success">Iniciar Consulta</a>
+                                {% else %}
+                                    {% comment %} <a href="{% url 'A20_Hrs:anular_hora' hora.id %}" class="btn btn-sm btn-danger">Anular</a> {% endcomment %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6">No hay horas médicas para este día.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{% url 'A20_Hrs:calendario_horasmedicas' %}?year={{ dia.year }}&month={{ dia.month }}" class="btn btn-secondary">Volver al Calendario</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% if request.user.is_superuser %}
+    {% if fichas_medicas %}
+        <ul mt-4>
+            {% for ficha in fichas_medicas %}
+                <li>
+                    {{ ficha.id }})&nbsp;&nbsp; {{ ficha.medico }} / {{ ficha.paciente }} - {{ ficha.f_consulta|date:"l, d/m/Y H:i" }} [ {{ ficha.estado }} ]
+                    &nbsp;<a href="{% url 'A30_Fic:reasignar_ficha_medica' ficha.id %}">Reasignar</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        }<p>No tienes fichas médicas.</p>
+    {% endif %}
+{% endif %}
+
+{% for group in request.user.groups.all %} {# Iteramos sobre los grupos del usuario #}
+    {% if group.name == "Jefes de Plataforma" %} {# Si el usuario pertenece al grupo "Jefes de Plataforma" #}
+        {% if fichas_medicas %}
+            <ul mt-4>
+                {% for ficha in fichas_medicas %}
+                    <li>
+                        {{ ficha.id }})&nbsp;&nbsp; {{ ficha.medico }} / {{ ficha.paciente }} - {{ ficha.f_consulta|date:"l, d/m/Y H:i" }} [ {{ ficha.estado }} ]
+                        &nbsp;<a href="{% url 'A30_Fic:reasignar_ficha_medica' ficha.id %}">Reasignar</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No tienes fichas médicas.</p>
+        {% endif %}
+    {% endif %}
+
+
+    {% if group.name == "Pacientes" %}
+        {% if fichas_medicas %}
+            <ul>
+                {% for ficha in fichas_medicas %}
+                    <li>
+                        {{ ficha.f_consulta|date:"l, d/m/Y H:i" }}&nbsp;&nbsp; {{ ficha.medico }} &nbsp;&nbsp;-&nbsp;&nbsp;  [ {{ ficha.estado }} ]
+                        &nbsp;<a class="btn btn-primary" href="{% url 'A30_Fic:ver_ficha_medica' ficha.id %}">Ver</a>
+                        &nbsp;<a href="{% url 'A30_Fic:ver_perfilout' user.id %}">Ver tu ficha</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No tienes fichas médicas.</p>
+        {% endif %}
+    {% endif %}
+{% endfor %}
