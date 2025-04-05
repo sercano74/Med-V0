@@ -35,9 +35,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-q94ue$4ao6+z+xhpszyj&t9rvt#$ws)&pnnxxs5xknmq%a1%tx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sercano74.pythonanywhere.com','localhost','127.0.0.1']
 
 
 # Application definition
@@ -103,11 +103,11 @@ AUTHENTICATION_BACKENDS = [
 WSGI_APPLICATION = 'Med.wsgi.application'
 
 
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True #Recomendado por seguridad
 # Recuerda cambiar SESSION_COOKIE_SECURE y SESSION_COOKIE_HTTPONLY a True en producción, cuando uses HTTPS.
 
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
 # Recuerda cambiarlo a True en producción.
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
@@ -197,7 +197,8 @@ LOGOUT_REDIRECT_URL = '/'
 # ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_USER_DISPLAY = lambda user: user.username #Como se muestra el usuario, si lo modificaste revisalo
+#Como se muestra el usuario, si lo modificaste revisalo
+ACCOUNT_USER_DISPLAY = lambda user: user.username 
 # ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_EMAIL_REQUIRED = True
